@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParagliderSim", "ParagliderSim\ParagliderSim\ParagliderSim.csproj", "{3FA51ACA-3366-4A38-839E-ABB1ED008285}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "ParagliderSimContent", "ParagliderSim\ParagliderSimContent\ParagliderSimContent.contentproj", "{606EF545-A70F-49F1-B5A6-BCBE40A4A064}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParagliderSimContent", "ParagliderSim\ParagliderSimContent\ParagliderSimContent.contentproj", "{606EF545-A70F-49F1-B5A6-BCBE40A4A064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OculusRift", "..\OculusParrotKinect.OculusRift\OculusRift.csproj", "{AE4CE294-06CF-467C-BB9B-4B2EB9783ED9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OculusRift", "OculusParrotKinect.OculusRift\OculusRift.csproj", "{AE4CE294-06CF-467C-BB9B-4B2EB9783ED9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

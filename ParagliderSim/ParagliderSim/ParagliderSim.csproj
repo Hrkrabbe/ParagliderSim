@@ -117,7 +117,7 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OculusParrotKinect.OculusRift\OculusRift.csproj">
+    <ProjectReference Include="..\..\OculusParrotKinect.OculusRift\OculusRift.csproj">
       <Project>{AE4CE294-06CF-467C-BB9B-4B2EB9783ED9}</Project>
       <Name>OculusRift</Name>
     </ProjectReference>
