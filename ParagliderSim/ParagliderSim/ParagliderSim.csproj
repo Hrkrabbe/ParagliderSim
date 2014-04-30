@@ -117,6 +117,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\JigLibX 0.3.1\JigLibX\JigLibX.csproj">
+      <Project>{8A7CEF45-3501-491D-AEDA-0164060F5348}</Project>
+      <Name>JigLibX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\OculusParrotKinect.OculusRift\OculusRift.csproj">
       <Project>{AE4CE294-06CF-467C-BB9B-4B2EB9783ED9}</Project>
       <Name>OculusRift</Name>
