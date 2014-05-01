@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using OculusRift.Oculus;
+using JigLibX.Physics;
+using JigLibX.Geometry;
+using JigLibX.Collision;
 
 namespace ParagliderSim
 {
@@ -131,6 +134,8 @@ namespace ParagliderSim
         protected override void Initialize()
         {
             device = graphics.GraphicsDevice;
+            PhysicsSystem world = new PhysicsSystem();
+            world.CollisionSystem = new CollisionSystemSAP();
 
             if (OREnabled)
             {
@@ -180,6 +185,9 @@ namespace ParagliderSim
 
         protected override void Update(GameTime gameTime)
         {
+            float timeStep = (float)gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
+            PhysicsSystem.CurrentPhysicsSystem.Integrate(timeStep);
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
@@ -279,20 +287,20 @@ namespace ParagliderSim
 
 
         #region Water
-        private Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
+        private Microsoft.Xna.Framework.Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
         {
             planeNormalDirection.Normalize();
             Vector4 planeCoeffs = new Vector4(planeNormalDirection, height);
             if (clipSide)
                 planeCoeffs *= -1;
 
-            Plane finalPlane = new Plane(planeCoeffs);
+            Microsoft.Xna.Framework.Plane finalPlane = new Microsoft.Xna.Framework.Plane(planeCoeffs);
 
             return finalPlane;
         }
         private void DrawRefractionMap()
         {
-            Plane refractionPlane = CreatePlane(waterHeight + 1.5f, new Vector3(0, -1, 0), viewMatrix, false);
+            Microsoft.Xna.Framework.Plane refractionPlane = CreatePlane(waterHeight + 1.5f, new Vector3(0, -1, 0), viewMatrix, false);
 
             //refractionPlane = CreatePlane(30.0045F, new Vector3(0, -1, 0), viewMatrix, false);
             effect.Parameters["ClipPlane0"].SetValue(new Vector4(refractionPlane.Normal, refractionPlane.D));
@@ -559,7 +567,7 @@ namespace ParagliderSim
             foreach(EffectPass p in e.CurrentTechnique.Passes)
             {
                 p.Apply();
-                device.DrawUserPrimitives(PrimitiveType.TriangleList, terrain.getCollisionVertices(playerPosition), 0, 1, VertexPositionColor.VertexDeclaration);
+                device.DrawUserPrimitives(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, terrain.getCollisionVertices(playerPosition), 0, 1, VertexPositionColor.VertexDeclaration);
             }
         }
         #endregion
