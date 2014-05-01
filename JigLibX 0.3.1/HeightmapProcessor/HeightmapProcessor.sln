@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeightmapProcessor", "HeightmapProcessor\HeightmapProcessor.csproj", "{C77F18AB-7EC8-4F87-A88F-3506CABE701A}"
 EndProject
 Global

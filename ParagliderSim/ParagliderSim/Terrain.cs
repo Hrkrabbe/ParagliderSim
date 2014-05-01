@@ -166,6 +166,7 @@ namespace ParagliderSim
         }
         #endregion
 
+        //Returns a plane for collision testing
         public Plane getPlane(Vector3 position)
         {
             VertexMultitextured botLeft, upLeft, botRight, upRight;
@@ -184,6 +185,7 @@ namespace ParagliderSim
                 return new Plane(botLeft.Position, upLeft.Position, botRight.Position);
         }
 
+        //Test method for drawing current plane
         public VertexPositionColor[] getCollisionVertices(Vector3 position)
         {
             VertexMultitextured botLeft, upLeft, botRight, upRight;

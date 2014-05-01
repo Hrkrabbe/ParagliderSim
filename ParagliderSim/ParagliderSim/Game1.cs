@@ -33,6 +33,8 @@ namespace ParagliderSim
         //Texture2D cloudMap;
         Model skyDome;
 
+        List<WorldComponent> worldComponents;
+
         //Terrain
         float terrainScale = 16;
         Texture2D heightmap;
@@ -70,7 +72,7 @@ namespace ParagliderSim
         float updownRot = -MathHelper.Pi / 10.0f;
         Matrix playerBodyRotation;
         Matrix playerWorld;
-        Vector3 playerPosition = new Vector3(700, 800, -500);
+        Vector3 playerPosition = new Vector3(740, 250, -700);
         BoundingSphere playerSphere, originalPlayerSphere;
 
         //Oculus Rift
@@ -176,6 +178,7 @@ namespace ParagliderSim
             Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
             originalMouseState = Mouse.GetState();
 
+            initGameWorld();
             initPlayerSphere();
         }
 
@@ -202,8 +205,8 @@ namespace ParagliderSim
             foreach (ModelMesh mesh in playerModel.Meshes)
             {
                 originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
-                originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
             }
+            originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
         }
 
         #region movement
@@ -269,6 +272,28 @@ namespace ParagliderSim
             playerWorld = Matrix.Identity * Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * playerBodyRotation * Matrix.CreateTranslation(playerPosition);
             playerSphere = originalPlayerSphere.Transform(playerWorld);
         }
+        #endregion
+
+        #region collision
+        public bool checkCollision()
+        {
+            if (checkTerrainCollision() || checkWorldComponentCollision())
+                return true;
+            else
+                return false;
+        }
+
+        public bool checkWorldComponentCollision()
+        {
+            bool collision = false;
+
+            foreach (WorldComponent wc in worldComponents)
+            {
+                if (playerSphere.Intersects(wc.getBoundingSphere()))
+                    collision = true;
+            }
+            return collision;
+        }
 
         public bool checkTerrainCollision()
         {
@@ -283,8 +308,6 @@ namespace ParagliderSim
             }
         }
         #endregion
-
-
 
         #region Water
         private Microsoft.Xna.Framework.Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
@@ -401,9 +424,10 @@ namespace ParagliderSim
             SetLeftEye();
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            drawGameWorld();
             DrawPlayer();
-            DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
-            DrawModel(house, new Vector3(740, 195, -700));
+            //DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
+            //DrawModel(house, new Vector3(740, 195, -700));
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
@@ -412,9 +436,10 @@ namespace ParagliderSim
             SetRightEye();
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            drawGameWorld();
             DrawPlayer();
-            DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
-            DrawModel(house, new Vector3(740, 195, -700));
+            //DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
+            //DrawModel(house, new Vector3(740, 195, -700));
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
@@ -519,7 +544,7 @@ namespace ParagliderSim
         private void DrawInfo()
         {
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, playerPosition.ToString() +"\n"+ halfIPD * 2 + "\n" + checkTerrainCollision().ToString(), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(font, playerPosition.ToString() +"\n"+ halfIPD * 2 + "\n" + checkCollision().ToString(), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
 
         }
@@ -568,6 +593,30 @@ namespace ParagliderSim
             {
                 p.Apply();
                 device.DrawUserPrimitives(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, terrain.getCollisionVertices(playerPosition), 0, 1, VertexPositionColor.VertexDeclaration);
+            }
+        }
+        #endregion
+
+        #region gameWorld
+        public void initGameWorld()
+        {
+            worldComponents = new List<WorldComponent>();
+
+            //Add all static components of the world map here:
+            worldComponents.Add(new WorldComponent(unitMeter, 0.01f, 0, new Vector3(736, 195.2f, -700)));
+            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(740, 195, -700)));
+            worldComponents.Add(new WorldComponent(unitMeter, 0.02f, 0, new Vector3(726, 200.2f, -700)));
+            worldComponents.Add(new WorldComponent(unitMeter, 0.03f, 0, new Vector3(716, 210.2f, -700)));
+            worldComponents.Add(new WorldComponent(unitMeter, 0.05f, 0, new Vector3(706, 220.2f, -700)));
+            worldComponents.Add(new WorldComponent(unitMeter, 0.1f, 0, new Vector3(696, 240.2f, -700)));
+        }
+
+        public void drawGameWorld()
+        {
+            //draws all static components of world map
+            foreach (WorldComponent wc in worldComponents)
+            {
+                wc.Draw(viewMatrix, projectionMatrix);
             }
         }
         #endregion
