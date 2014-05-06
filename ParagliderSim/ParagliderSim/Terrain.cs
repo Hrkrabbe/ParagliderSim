@@ -12,7 +12,7 @@ using OculusRift.Oculus;
 
 namespace ParagliderSim
 {
-    class Terrain
+    public class Terrain
     {
         GraphicsDevice device;
 

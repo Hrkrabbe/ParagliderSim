@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace ParagliderSim
 {
-    class WorldComponent
+    public class WorldComponent
     {
         Matrix world;
         float scale;

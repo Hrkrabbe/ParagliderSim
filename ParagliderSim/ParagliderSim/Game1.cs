@@ -9,9 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using OculusRift.Oculus;
-using JigLibX.Physics;
-using JigLibX.Geometry;
-using JigLibX.Collision;
+
 
 namespace ParagliderSim
 {
@@ -22,6 +20,7 @@ namespace ParagliderSim
         SpriteFont font;
         GraphicsDevice device;
         Effect effect;
+        Player player;
 
         Vector3 lightDirection = new Vector3(1.0f, -1.0f, 1.0f);
         double  resolutionX = 1280,
@@ -56,27 +55,10 @@ namespace ParagliderSim
         Matrix viewMatrix;
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
-        Matrix cameraRotation;
-        Vector3 cameraOriginalTarget;
-        Vector3 cameraRotatedTarget;
-        Vector3 cameraFinalTarget;
-        Vector3 rotatedVector;
-        Vector3 cameraOriginalUpVector;
-        Vector3 cameraRotatedUpVector;
 
-        //Player
-        Model playerModel;
-        const float rotationSpeed = 0.1f;
-        const float moveSpeed = 30.0f;
-        float lefrightRot = MathHelper.PiOver2;
-        float updownRot = -MathHelper.Pi / 10.0f;
-        Matrix playerBodyRotation;
-        Matrix playerWorld;
-        Vector3 playerPosition = new Vector3(740, 250, -700);
-        BoundingSphere playerSphere, originalPlayerSphere;
 
         //Oculus Rift
-        bool OREnabled = true;
+        bool orEnabled = true;
         #region ORVars
         OculusClient oculusClient;
         Effect oculusRiftDistortionShader;
@@ -106,13 +88,48 @@ namespace ParagliderSim
         private Microsoft.Xna.Framework.Rectangle sideBySideRightSpriteSize;
         #endregion
 
+        #region properties
+        public Matrix ViewMatrix
+        {
+            get { return viewMatrix; }
+            set { viewMatrix = value; }
+        }
+
+        public Matrix ProjectionMatrix
+        {
+            get { return projectionMatrix; }
+            //set { ProjectionMatrix = value; }
+        }
+
+        public OculusClient OculusClient
+        {
+            get {return oculusClient;}
+        }
+
+        public bool OREnabled
+        {
+            get { return orEnabled; }
+        }
+
+        public Terrain Terrain
+        {
+            get { return terrain; }
+        }
+
+        public List<WorldComponent> WorldComponents
+        {
+            get { return worldComponents; }
+        }
+
+        #endregion
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             this.IsFixedTimeStep = true;
 
-            if (OREnabled)
+            if (orEnabled)
             {
                 oculusClient = new OculusClient();
                 scaleImageFactor = 0.71f;
@@ -136,10 +153,10 @@ namespace ParagliderSim
         protected override void Initialize()
         {
             device = graphics.GraphicsDevice;
-            PhysicsSystem world = new PhysicsSystem();
-            world.CollisionSystem = new CollisionSystemSAP();
+            player = new Player(this);
+            Components.Add(player);
 
-            if (OREnabled)
+            if (orEnabled)
             {
                 InitOculus();
             }
@@ -157,7 +174,7 @@ namespace ParagliderSim
             font = Content.Load<SpriteFont>("SpriteFont1");
             effect = Content.Load<Effect>(@"Shader/effects");
             heightmap = Content.Load<Texture2D>(@"Images/heightmap2");
-            playerModel = Content.Load<Model>(@"Models/CharacterModelNew");
+            
             grassTexture = Content.Load<Texture2D>(@"Textures/grass");
             sandTexture = Content.Load<Texture2D>(@"Textures/sand");
             rockTexture = Content.Load<Texture2D>(@"Textures/rock");
@@ -175,11 +192,8 @@ namespace ParagliderSim
 
             terrain = new Terrain(device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture);
 
-            Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
-            originalMouseState = Mouse.GetState();
-
             initGameWorld();
-            initPlayerSphere();
+            //initPlayerSphere();
         }
 
         protected override void UnloadContent()
@@ -188,126 +202,11 @@ namespace ParagliderSim
 
         protected override void Update(GameTime gameTime)
         {
-            float timeStep = (float)gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
-            PhysicsSystem.CurrentPhysicsSystem.Integrate(timeStep);
-
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            float timeDifference = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            ProcessInput(timeDifference);
-
             base.Update(gameTime);
         }
-
-        public void initPlayerSphere()
-        {
-            foreach (ModelMesh mesh in playerModel.Meshes)
-            {
-                originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
-            }
-            originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
-        }
-
-        #region movement
-        private void ProcessInput(float amount)
-        {
-            MouseState currentMouseState = Mouse.GetState();
-            if (currentMouseState != originalMouseState)
-            {
-                float deltaX = currentMouseState.X - originalMouseState.X;
-                float deltaY = currentMouseState.Y - originalMouseState.Y;
-                lefrightRot -= rotationSpeed * deltaX * amount;
-                updownRot -= rotationSpeed * deltaY * amount;
-                Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
-                //UpdateViewMatrix();
-            }
-
-            Vector3 moveVector = new Vector3(0, 0, 0);
-            KeyboardState keyState = Keyboard.GetState();
-            if (keyState.IsKeyDown(Keys.Up) || keyState.IsKeyDown(Keys.W))
-                moveVector += new Vector3(0, 0, -1);
-            if (keyState.IsKeyDown(Keys.Down) || keyState.IsKeyDown(Keys.S))
-                moveVector += new Vector3(0, 0, 1);
-            if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
-                moveVector += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
-                moveVector += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.Q))
-                moveVector += new Vector3(0, 1, 0);
-            if (keyState.IsKeyDown(Keys.Z))
-                moveVector += new Vector3(0, -1, 0);
-            AddToCameraPosition(moveVector * amount);
-            UpdateViewMatrix();
-        }
-
-        private void AddToCameraPosition(Vector3 delta)
-        {
-            playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
-            rotatedVector = Vector3.Transform(delta, playerBodyRotation);
-            playerPosition += rotatedVector * moveSpeed;
-        }
-
-        private void UpdateViewMatrix()
-        {
-            playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
-       
-            if (OREnabled)
-            {
-                cameraRotation = Matrix.CreateFromQuaternion(OculusClient.GetPredictedOrientation()) * playerBodyRotation;
-            }
-            else
-                cameraRotation = playerBodyRotation;
-
-            cameraOriginalTarget = new Vector3(0, 0, -1);
-            cameraRotatedTarget = Vector3.Transform(cameraOriginalTarget, cameraRotation);
-            cameraFinalTarget = playerPosition + cameraRotatedTarget;
-
-            cameraOriginalUpVector = new Vector3(0, 1, 0);
-            cameraRotatedUpVector = Vector3.Transform(cameraOriginalUpVector, cameraRotation);
-
-            viewMatrix = Matrix.CreateLookAt(playerPosition, cameraFinalTarget, cameraRotatedUpVector);
-
-            //player
-            playerWorld = Matrix.Identity * Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * playerBodyRotation * Matrix.CreateTranslation(playerPosition);
-            playerSphere = originalPlayerSphere.Transform(playerWorld);
-        }
-        #endregion
-
-        #region collision
-        public bool checkCollision()
-        {
-            if (checkTerrainCollision() || checkWorldComponentCollision())
-                return true;
-            else
-                return false;
-        }
-
-        public bool checkWorldComponentCollision()
-        {
-            bool collision = false;
-
-            foreach (WorldComponent wc in worldComponents)
-            {
-                if (playerSphere.Intersects(wc.getBoundingSphere()))
-                    collision = true;
-            }
-            return collision;
-        }
-
-        public bool checkTerrainCollision()
-        {
-            if (playerPosition.X < 0 || playerPosition.Z > 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z > terrain.getHeightUnits())
-                return false;
-            else
-            {
-                if (playerSphere.Intersects(terrain.getPlane(playerPosition)) == PlaneIntersectionType.Intersecting)
-                    return true;
-                else
-                    return false;
-            }
-        }
-        #endregion
 
         #region Water
         private Microsoft.Xna.Framework.Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
@@ -416,7 +315,7 @@ namespace ParagliderSim
             spriteBatch.End();
         }
 
-        private void DrawOR()
+        private void DrawOR(GameTime gameTime)
         {
             device.Clear(Color.Black);
             SetProjectionOffset();
@@ -425,9 +324,9 @@ namespace ParagliderSim
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
-            DrawPlayer();
-            //DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
-            //DrawModel(house, new Vector3(740, 195, -700));
+            player.Draw();
+            base.Draw(gameTime);
+
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
@@ -437,9 +336,9 @@ namespace ParagliderSim
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
-            DrawPlayer();
-            //DrawModel(unitMeter, new Vector3(736, 195.2f, -700));
-            //DrawModel(house, new Vector3(740, 195, -700));
+            player.Draw();
+            base.Draw(gameTime);
+
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
@@ -470,39 +369,25 @@ namespace ParagliderSim
         protected override void Draw(GameTime gameTime)
         {
 
-            if (OREnabled)
+            if (orEnabled)
             {
-                DrawOR();
+                DrawOR(gameTime);
             }
             else
             {
                 terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
-                DrawPlayer();
+                //DrawPlayer();
                 DrawModel(unitMeter);
                 DrawInfo();
                 //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
                 //    DrawCollision();
+
+                base.Draw(gameTime);
             }
-            base.Draw(gameTime);
+            
         }
 
-        private void DrawPlayer()
-        {
-            Matrix[] transforms = new Matrix[playerModel.Bones.Count];
-            playerModel.CopyAbsoluteBoneTransformsTo(transforms);
 
-            foreach (ModelMesh mesh in playerModel.Meshes)
-            {
-                foreach (BasicEffect beffect in mesh.Effects)
-                {
-                    beffect.EnableDefaultLighting();
-                    beffect.World = transforms[mesh.ParentBone.Index] * playerWorld;
-                    beffect.View = viewMatrix;
-                    beffect.Projection = projectionMatrix;
-                }
-                mesh.Draw();
-            }
-        }
 
         private void DrawModel(Model model)
         {
@@ -544,7 +429,7 @@ namespace ParagliderSim
         private void DrawInfo()
         {
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, playerPosition.ToString() +"\n"+ halfIPD * 2 + "\n" + checkCollision().ToString(), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.checkCollision().ToString(), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
 
         }
@@ -564,7 +449,7 @@ namespace ParagliderSim
             Matrix[] modelTransforms = new Matrix[skyDome.Bones.Count];
             skyDome.CopyAbsoluteBoneTransformsTo(modelTransforms);
 
-            Matrix wMatrix = Matrix.CreateTranslation(0, -100.0f, 0) * Matrix.CreateScale(1) * Matrix.CreateTranslation(playerPosition);
+            Matrix wMatrix = Matrix.CreateTranslation(0, -100.0f, 0) * Matrix.CreateScale(1) * Matrix.CreateTranslation(player.Position);
             foreach (ModelMesh mesh in skyDome.Meshes)
             {
                 foreach (BasicEffect currentEffect in mesh.Effects)
@@ -592,7 +477,7 @@ namespace ParagliderSim
             foreach(EffectPass p in e.CurrentTechnique.Passes)
             {
                 p.Apply();
-                device.DrawUserPrimitives(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, terrain.getCollisionVertices(playerPosition), 0, 1, VertexPositionColor.VertexDeclaration);
+                device.DrawUserPrimitives(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, terrain.getCollisionVertices(player.Position), 0, 1, VertexPositionColor.VertexDeclaration);
             }
         }
         #endregion
