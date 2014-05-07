@@ -38,10 +38,24 @@ namespace ParagliderSim
         Vector3 cameraOriginalUpVector;
         Vector3 cameraRotatedUpVector;
 
+        //Collision
+        bool isColliding;
+        Plane plane;
+        Vector3 rayPos;
+        Vector3 planeNormal;
+        Ray ray;
+        float? collisionDistance;
+        float collisionDepth;
+
         #region properties
         public Vector3 Position
         {
             get { return playerPosition; }
+        }
+
+        public bool IsColliding
+        {
+            get { return isColliding; }
         }
 
         #endregion
@@ -129,15 +143,16 @@ namespace ParagliderSim
                 moveVector += new Vector3(0, 1, 0);
             if (keyState.IsKeyDown(Keys.Z))
                 moveVector += new Vector3(0, -1, 0);
-            AddToCameraPosition(moveVector * amount);
+            AddToPlayerPosition(moveVector * amount);
             UpdateViewMatrix();
         }
 
-        private void AddToCameraPosition(Vector3 delta)
+        private void AddToPlayerPosition(Vector3 delta)
         {
             playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
             rotatedVector = Vector3.Transform(delta, playerBodyRotation);
             playerPosition += rotatedVector * moveSpeed;
+            isColliding = checkCollision();
         }
 
         private void UpdateViewMatrix()
@@ -193,8 +208,19 @@ namespace ParagliderSim
                 return false;
             else
             {
-                if (playerSphere.Intersects(game.Terrain.getPlane(playerPosition)) == PlaneIntersectionType.Intersecting)
+                plane = game.Terrain.getPlane(playerPosition);
+                if (playerSphere.Intersects(plane) == PlaneIntersectionType.Intersecting)
+                {
+                    rayPos = playerSphere.Center;
+                    planeNormal = -plane.Normal;
+                    planeNormal.Normalize();
+                    ray = new Ray(rayPos, -planeNormal);
+                    collisionDistance = ray.Intersects(plane);
+                    collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
+
+                    playerPosition += planeNormal * collisionDepth;
                     return true;
+                }
                 else
                     return false;
             }

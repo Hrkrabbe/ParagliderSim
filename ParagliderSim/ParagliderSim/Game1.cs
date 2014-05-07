@@ -429,7 +429,7 @@ namespace ParagliderSim
         private void DrawInfo()
         {
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.checkCollision().ToString(), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.IsColliding.ToString(), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
 
         }
