@@ -209,20 +209,20 @@ namespace ParagliderSim
         }
 
         #region Water
-        private Microsoft.Xna.Framework.Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
+        private Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide)
         {
             planeNormalDirection.Normalize();
             Vector4 planeCoeffs = new Vector4(planeNormalDirection, height);
             if (clipSide)
                 planeCoeffs *= -1;
 
-            Microsoft.Xna.Framework.Plane finalPlane = new Microsoft.Xna.Framework.Plane(planeCoeffs);
+            Plane finalPlane = new Plane(planeCoeffs);
 
             return finalPlane;
         }
         private void DrawRefractionMap()
         {
-            Microsoft.Xna.Framework.Plane refractionPlane = CreatePlane(waterHeight + 1.5f, new Vector3(0, -1, 0), viewMatrix, false);
+            Plane refractionPlane = CreatePlane(waterHeight + 1.5f, new Vector3(0, -1, 0), viewMatrix, false);
 
             //refractionPlane = CreatePlane(30.0045F, new Vector3(0, -1, 0), viewMatrix, false);
             effect.Parameters["ClipPlane0"].SetValue(new Vector4(refractionPlane.Normal, refractionPlane.D));
@@ -233,6 +233,10 @@ namespace ParagliderSim
             device.SetRenderTarget(null);
             effect.Parameters["Clipping"].SetValue(false);   // Make sure you turn it back off so the whole scene doesnt keep rendering as clipped
             refractionMap = refractionRenderTarget;
+
+          //  System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Refraction.jpg");
+          //  refractionRenderTarget.SaveAsJpeg(ss, 500, 500);
+          //  ss.Close();
         }
         #endregion
 
@@ -317,6 +321,7 @@ namespace ParagliderSim
 
         private void DrawOR(GameTime gameTime)
         {
+            DrawRefractionMap();
             device.Clear(Color.Black);
             SetProjectionOffset();
 
@@ -324,25 +329,28 @@ namespace ParagliderSim
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
+            
             player.Draw();
             base.Draw(gameTime);
 
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
-            //DrawRefractionMap();
+            
 
             SetRightEye();
+                       
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
+            
             player.Draw();
             base.Draw(gameTime);
 
             
             //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
             //    DrawCollision();
-            //DrawRefractionMap();
+            
 
             DrawOculusRenderTargets();
             DrawInfo();
