@@ -44,12 +44,12 @@ namespace ParagliderSim
         Terrain terrain;
 
         //Water
-        const float waterHeight = 5.0f;
+        const float waterHeight = 125.0f;
         RenderTarget2D refractionRenderTarget;
         Texture2D refractionMap;
         RenderTarget2D reflectionRenderTarget;
         Texture2D reflectionMap;
-
+        Matrix reflectionViewMatrix;
 
         //Camera and movement
         Matrix viewMatrix;
@@ -187,7 +187,8 @@ namespace ParagliderSim
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
 
             PresentationParameters pp = device.PresentationParameters;
-            refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight);
+         //   refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight);
+            refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight);
 
             terrain = new Terrain(device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture);
@@ -206,6 +207,17 @@ namespace ParagliderSim
                 this.Exit();
 
             base.Update(gameTime);
+            //water
+            Vector3 playerPosition = player.Position;
+            Vector3 reflCameraPosition = playerPosition;
+            reflCameraPosition.Y = -playerPosition.Y + waterHeight * 2;
+            Vector3 reflTargetPos = player.camFinalTarget;
+            reflTargetPos.Y = -player.camFinalTarget.Y + waterHeight * 2;
+
+            Vector3 cameraRight = Vector3.Transform(new Vector3(1, 0, 0), player.camRotation);
+            Vector3 invUpVector = Vector3.Cross(cameraRight, reflTargetPos - reflCameraPosition);
+
+            reflectionViewMatrix = Matrix.CreateLookAt(reflCameraPosition, reflTargetPos, invUpVector);
         }
 
         #region Water
@@ -228,14 +240,34 @@ namespace ParagliderSim
             effect.Parameters["ClipPlane0"].SetValue(new Vector4(refractionPlane.Normal, refractionPlane.D));
             effect.Parameters["Clipping"].SetValue(true);    // Allows the geometry to be clipped for the purpose of creating a refraction map
             device.SetRenderTarget(refractionRenderTarget);
-            //  device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+             device.Clear(Color.Black); //ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             device.SetRenderTarget(null);
             effect.Parameters["Clipping"].SetValue(false);   // Make sure you turn it back off so the whole scene doesnt keep rendering as clipped
             refractionMap = refractionRenderTarget;
 
-          //  System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Refraction.jpg");
-          //  refractionRenderTarget.SaveAsJpeg(ss, 500, 500);
+
+           
+           //System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Refraction.jpg");
+           //refractionRenderTarget.SaveAsJpeg(ss, 500, 500);
+           //ss.Close();
+        }
+
+        private void DrawReflectionMap()
+        {
+            Plane reflectionPlane = CreatePlane(waterHeight - 0.5f, new Vector3(0, -1, 0), reflectionViewMatrix, true);
+            effect.Parameters["ClipPlane0"].SetValue(new Vector4(reflectionPlane.Normal, reflectionPlane.D));
+            effect.Parameters["Clipping"].SetValue(true);    // Allows the geometry to be clipped for the purpose of creating a refraction map
+            device.SetRenderTarget(reflectionRenderTarget);
+            device.Clear(Color.Black);
+            DrawSkyDome(reflectionViewMatrix);
+            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            effect.Parameters["Clipping"].SetValue(false);
+            device.SetRenderTarget(null);
+            reflectionMap = reflectionRenderTarget;
+
+          //  System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Reflection.jpg");
+          //  reflectionRenderTarget.SaveAsJpeg(ss, 500, 500);
           //  ss.Close();
         }
         #endregion
@@ -322,6 +354,7 @@ namespace ParagliderSim
         private void DrawOR(GameTime gameTime)
         {
             DrawRefractionMap();
+            DrawReflectionMap();
             device.Clear(Color.Black);
             SetProjectionOffset();
 
@@ -513,6 +546,11 @@ namespace ParagliderSim
             }
         }
         #endregion
+
+        public float getWaterHeight()
+        {
+            return waterHeight;
+        }
     }
 
 

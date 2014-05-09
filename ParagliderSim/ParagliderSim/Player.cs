@@ -46,11 +46,21 @@ namespace ParagliderSim
         Ray ray;
         float? collisionDistance;
         float collisionDepth;
-
+        
         #region properties
         public Vector3 Position
         {
             get { return playerPosition; }
+        }
+
+        public Vector3 camFinalTarget
+        {
+            get { return cameraFinalTarget; }
+        }
+
+        public Matrix camRotation
+        {
+            get { return cameraRotation; }
         }
 
         public bool IsColliding
@@ -174,6 +184,9 @@ namespace ParagliderSim
             cameraRotatedUpVector = Vector3.Transform(cameraOriginalUpVector, cameraRotation);
 
             game.ViewMatrix = Matrix.CreateLookAt(playerPosition, cameraFinalTarget, cameraRotatedUpVector);
+
+
+
 
             //player
             playerWorld = Matrix.Identity * Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * playerBodyRotation * Matrix.CreateTranslation(playerPosition);

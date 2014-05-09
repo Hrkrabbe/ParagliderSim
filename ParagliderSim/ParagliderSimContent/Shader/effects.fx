@@ -30,8 +30,19 @@ bool xShowNormals;
 float3 xCamPos;
 float3 xCamUp;
 float xPointSpriteSize;
+//bool Clipping;
+//float4 ClipPlane0;
+
+
+
+//------- Technique: Clipping Plane Fix --------
+
 bool Clipping;
 float4 ClipPlane0;
+
+
+//------- Technique: Clipping Plane Fix --------
+
 
 //------- Texture Samplers --------
 
@@ -46,6 +57,12 @@ sampler TextureSampler1 = sampler_state { texture = <xTexture1> ; magfilter = LI
 sampler TextureSampler2 = sampler_state { texture = <xTexture2> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};Texture xTexture3;
 
 sampler TextureSampler3 = sampler_state { texture = <xTexture3> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};
+
+
+
+
+
+
 
 //------- Technique: Pretransformed --------
 
@@ -292,7 +309,8 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     Output.LightDirection.xyz = -xLightDirection;
     Output.LightDirection.w = 1;    
     Output.TextureWeights = inTexWeights;
-	//Output.clipDistances = dot(inPos, ClipPlane0);
+
+	Output.clipDistances = dot(inPos, ClipPlane0);
 	Output.Depth = Output.Position.z/Output.Position.w;
 	 if(Output.Depth > 1 || Output.Depth < 0)
         Output.Depth = 0;
@@ -308,8 +326,7 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
     if (xEnableLighting)
         lightingFactor = saturate(saturate(dot(PSIn.Normal, PSIn.LightDirection)) + xAmbient);
         
-	//if (Clipping)
-    //clip(PSIn.clipDistances);
+
 
 	 float blendDistance = 0.997f;
 	 float blendWidth = 0.005f;
@@ -332,6 +349,8 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      Output.Color = lerp(nearColor, farColor, blendFactor);
      Output.Color *= lightingFactor;
         
+	if (Clipping)
+	  clip(PSIn.clipDistances);
     
     return Output;
 }
