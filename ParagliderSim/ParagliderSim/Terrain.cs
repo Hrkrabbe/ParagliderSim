@@ -185,6 +185,25 @@ namespace ParagliderSim
                 return new Plane(botLeft.Position, upLeft.Position, botRight.Position);
         }
 
+        public List<Plane> getPlanes(Vector3 position)
+        {
+            List<Plane> planes = new List<Plane>();
+            VertexMultitextured botLeft, upLeft, botRight, upRight;
+            int x, y;
+            x = (int)Math.Floor(position.X / terrainScale);
+            y = (int)Math.Floor(-position.Z / terrainScale);
+
+            botLeft = vertices[x + y * terrainWidth];
+            upLeft = vertices[x + (y + 1) * terrainWidth];
+            botRight = vertices[(x + 1) + y * terrainWidth];
+            upRight = vertices[(x + 1) + (y + 1) * terrainWidth];
+
+            planes.Add(new Plane(botLeft.Position, upRight.Position, botRight.Position));
+            planes.Add(new Plane(botLeft.Position, upLeft.Position, botRight.Position));
+
+            return planes;
+        }
+
         //Test method for drawing current plane
         public VertexPositionColor[] getCollisionVertices(Vector3 position)
         {

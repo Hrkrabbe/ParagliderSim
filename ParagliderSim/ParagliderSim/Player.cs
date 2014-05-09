@@ -197,7 +197,10 @@ namespace ParagliderSim
         #region collision
         public bool checkCollision()
         {
-            if (checkTerrainCollision() || checkWorldComponentCollision())
+
+            Vector3 d = new Vector3(0,0,-playerSphere.Radius);
+            Vector3 direction = Vector3.Transform(d, playerBodyRotation);
+            if (checkTerrainCollisionSquare(playerSphere.Center) || checkTerrainCollisionSquare(playerSphere.Center + direction) || checkWorldComponentCollision())
                 return true;
             else
                 return false;
@@ -215,13 +218,13 @@ namespace ParagliderSim
             return collision;
         }
 
-        public bool checkTerrainCollision()
+        public bool checkTerrainCollision(Vector3 position)
         {
-            if (playerPosition.X < 0 || playerPosition.Z > 0 || playerPosition.X > game.Terrain.getWidthUnits() || -playerPosition.Z > game.Terrain.getHeightUnits())
+            if (position.X < 0 || position.Z > 0 || position.X > game.Terrain.getWidthUnits() || -position.Z > game.Terrain.getHeightUnits())
                 return false;
             else
             {
-                plane = game.Terrain.getPlane(playerPosition);
+                plane = game.Terrain.getPlane(position);
                 if (playerSphere.Intersects(plane) == PlaneIntersectionType.Intersecting)
                 {
                     rayPos = playerSphere.Center;
@@ -235,6 +238,31 @@ namespace ParagliderSim
                     return true;
                 }
                 else
+                    return false;
+            }
+        }
+
+        public bool checkTerrainCollisionSquare(Vector3 position)
+        {
+            if (position.X < 0 || position.Z > 0 || position.X > game.Terrain.getWidthUnits() || -position.Z > game.Terrain.getHeightUnits())
+                return false;
+            else
+            {
+                foreach (Plane plane in game.Terrain.getPlanes(position))
+                {
+                if (playerSphere.Intersects(plane) == PlaneIntersectionType.Intersecting)
+                {
+                    rayPos = playerSphere.Center;
+                    planeNormal = -plane.Normal;
+                    planeNormal.Normalize();
+                    ray = new Ray(rayPos, -planeNormal);
+                    collisionDistance = ray.Intersects(plane);
+                    collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
+
+                    playerPosition += planeNormal * collisionDepth;
+                    return true;
+                }
+                }
                     return false;
             }
         }

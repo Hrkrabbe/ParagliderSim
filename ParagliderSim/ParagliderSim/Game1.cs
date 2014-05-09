@@ -367,7 +367,7 @@ namespace ParagliderSim
             base.Draw(gameTime);
 
             
-            //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
+            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
             //    DrawCollision();
             
 
@@ -381,7 +381,7 @@ namespace ParagliderSim
             base.Draw(gameTime);
 
             
-            //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
+            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
             //    DrawCollision();
             
 
