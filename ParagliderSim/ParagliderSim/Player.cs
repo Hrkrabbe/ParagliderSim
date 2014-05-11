@@ -40,12 +40,6 @@ namespace ParagliderSim
 
         //Collision
         bool isColliding;
-        Plane plane;
-        Vector3 rayPos;
-        Vector3 planeNormal;
-        Ray ray;
-        float? collisionDistance;
-        float collisionDepth;
         
         #region properties
         public Vector3 Position
@@ -213,7 +207,16 @@ namespace ParagliderSim
             foreach (WorldComponent wc in game.WorldComponents)
             {
                 if (playerSphere.Intersects(wc.getBoundingSphere()))
+                {
+                    Vector3 direction = wc.getBoundingSphere().Center - playerSphere.Center;
+                    direction.Normalize();
+                    Ray ray = new Ray(playerSphere.Center, direction);
+                    float? collisionDistance = ray.Intersects(wc.getBoundingSphere());
+                    float collistionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
+
+                    playerPosition += -direction * collistionDepth;
                     collision = true;
+                }
             }
             return collision;
         }
@@ -224,15 +227,15 @@ namespace ParagliderSim
                 return false;
             else
             {
-                plane = game.Terrain.getPlane(position);
+                Plane plane = game.Terrain.getPlane(position);
                 if (playerSphere.Intersects(plane) == PlaneIntersectionType.Intersecting)
                 {
-                    rayPos = playerSphere.Center;
-                    planeNormal = -plane.Normal;
+                    Vector3 rayPos = playerSphere.Center;
+                    Vector3 planeNormal = -plane.Normal;
                     planeNormal.Normalize();
-                    ray = new Ray(rayPos, -planeNormal);
-                    collisionDistance = ray.Intersects(plane);
-                    collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
+                    Ray ray = new Ray(rayPos, -planeNormal);
+                    float? collisionDistance = ray.Intersects(plane);
+                    float collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
 
                     playerPosition += planeNormal * collisionDepth;
                     return true;
@@ -252,12 +255,12 @@ namespace ParagliderSim
                 {
                 if (playerSphere.Intersects(plane) == PlaneIntersectionType.Intersecting)
                 {
-                    rayPos = playerSphere.Center;
-                    planeNormal = -plane.Normal;
+                    Vector3 rayPos = playerSphere.Center;
+                    Vector3 planeNormal = -plane.Normal;
                     planeNormal.Normalize();
-                    ray = new Ray(rayPos, -planeNormal);
-                    collisionDistance = ray.Intersects(plane);
-                    collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
+                    Ray ray = new Ray(rayPos, -planeNormal);
+                    float? collisionDistance = ray.Intersects(plane);
+                    float collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
 
                     playerPosition += planeNormal * collisionDepth;
                     return true;

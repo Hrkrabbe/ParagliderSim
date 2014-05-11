@@ -32,7 +32,7 @@ namespace ParagliderSim
             initBoundingSphere();
         }
 
-        public void initBoundingSphere()
+        protected void initBoundingSphere()
         {
             foreach (ModelMesh mesh in model.Meshes)
             {
