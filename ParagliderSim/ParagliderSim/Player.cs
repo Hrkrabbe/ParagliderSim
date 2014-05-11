@@ -200,7 +200,7 @@ namespace ParagliderSim
 
             Vector3 d = new Vector3(0,0,-playerSphere.Radius);
             Vector3 direction = Vector3.Transform(d, playerBodyRotation);
-            if (checkTerrainCollisionSquare(playerSphere.Center) || checkTerrainCollisionSquare(playerSphere.Center + direction) || checkWorldComponentCollision())
+            if (checkTerrainCollision(playerSphere.Center) || checkTerrainCollision(playerSphere.Center + direction) || checkWorldComponentCollision())
                 return true;
             else
                 return false;

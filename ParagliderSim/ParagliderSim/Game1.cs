@@ -266,9 +266,9 @@ namespace ParagliderSim
             device.SetRenderTarget(null);
             reflectionMap = reflectionRenderTarget;
 
-          //  System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Reflection.jpg");
-          //  reflectionRenderTarget.SaveAsJpeg(ss, 500, 500);
-          //  ss.Close();
+            //System.IO.Stream ss = System.IO.File.OpenWrite("C:\\Test\\Reflection.jpg");
+            //reflectionRenderTarget.SaveAsJpeg(ss, 500, 500);
+            //ss.Close();
         }
         #endregion
 
@@ -351,44 +351,6 @@ namespace ParagliderSim
             spriteBatch.End();
         }
 
-        private void DrawOR(GameTime gameTime)
-        {
-            DrawRefractionMap();
-            DrawReflectionMap();
-            device.Clear(Color.Black);
-            SetProjectionOffset();
-
-            SetLeftEye();
-            DrawSkyDome(viewMatrix);
-            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
-            drawGameWorld();
-            
-            player.Draw();
-            base.Draw(gameTime);
-
-            
-            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
-            //    DrawCollision();
-            
-
-            SetRightEye();
-                       
-            DrawSkyDome(viewMatrix);
-            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
-            drawGameWorld();
-            
-            player.Draw();
-            base.Draw(gameTime);
-
-            
-            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
-            //    DrawCollision();
-            
-
-            DrawOculusRenderTargets();
-            DrawInfo();
-        }
-
         private void SetLeftEye()
         {
             device.SetRenderTarget(renderTargetLeft);
@@ -428,6 +390,40 @@ namespace ParagliderSim
             
         }
 
+        private void DrawOR(GameTime gameTime)
+        {
+
+            device.Clear(Color.Black);
+            SetProjectionOffset();
+
+            SetLeftEye();
+            DrawSkyDome(viewMatrix);
+            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            drawGameWorld();
+            player.Draw();
+            base.Draw(gameTime);
+            DrawRefractionMap();
+            DrawReflectionMap();
+            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
+            //    DrawCollision();
+
+
+            SetRightEye();
+
+            DrawSkyDome(viewMatrix);
+            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            drawGameWorld();
+            player.Draw();
+            base.Draw(gameTime);
+            DrawRefractionMap();
+            DrawReflectionMap();
+            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
+            //    DrawCollision();
+
+
+            DrawOculusRenderTargets();
+            DrawInfo();
+        }
 
 
         private void DrawModel(Model model)
