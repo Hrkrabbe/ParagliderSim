@@ -87,7 +87,14 @@ namespace ParagliderSim
         public override void Update(GameTime gameTime)
         {
             float timeDifference = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            ProcessInput(timeDifference);
+            if (game.IsDebug)
+            {
+                ProcessInputDebug(timeDifference);
+            }
+            else 
+            {
+               
+            }
 
             base.Update(gameTime);
         }
@@ -120,7 +127,7 @@ namespace ParagliderSim
         }
 
         #region movement
-        private void ProcessInput(float amount)
+        private void ProcessInputDebug(float amount)
         {
             MouseState currentMouseState = Mouse.GetState();
             if (currentMouseState != originalMouseState)
@@ -149,6 +156,23 @@ namespace ParagliderSim
                 moveVector += new Vector3(0, -1, 0);
             AddToPlayerPosition(moveVector * amount);
             UpdateViewMatrix();
+        }
+
+        private void processInput(float amount)
+        {
+            Vector2 leftVingPoint = new Vector2(0, 0);
+            Vector2 rightVingPoint = new Vector2(5, 0);
+            float leftWingSpeed = moveSpeed;
+            float rightWingSpeed = moveSpeed;
+
+            KeyboardState keyState = Keyboard.GetState();
+            if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
+                leftWingSpeed *= 0.5f;
+            if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
+                rightWingSpeed *= 0.5f;
+
+
+
         }
 
         private void AddToPlayerPosition(Vector3 delta)

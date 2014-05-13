@@ -60,7 +60,7 @@ namespace ParagliderSim
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
 
-
+        bool isDebug = true;
         //Oculus Rift
         bool orEnabled = true;
         #region ORVars
@@ -123,6 +123,11 @@ namespace ParagliderSim
         public List<WorldComponent> WorldComponents
         {
             get { return worldComponents; }
+        }
+
+        public bool IsDebug
+        {
+            get { return isDebug; }
         }
 
         #endregion
