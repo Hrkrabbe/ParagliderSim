@@ -315,10 +315,10 @@ namespace ParagliderSim
             effect.Parameters["xReflectionMap"].SetValue(reflectionMap);
             effect.Parameters["xRefractionMap"].SetValue(refractionMap);
             effect.Parameters["xWaterBumpMap"].SetValue(waterBumpMap);           
-            effect.Parameters["xWaveLength"].SetValue(0.1f);
+            effect.Parameters["xWaveLength"].SetValue(0.01f);
             effect.Parameters["xWaveHeight"].SetValue(0.1f);
             effect.Parameters["xTime"].SetValue(time);
-            effect.Parameters["xWindForce"].SetValue(0.0002f);
+            effect.Parameters["xWindForce"].SetValue(0.00009f);
             effect.Parameters["xWindDirection"].SetValue(windDirection);
 
             effect.CurrentTechnique.Passes[0].Apply();
