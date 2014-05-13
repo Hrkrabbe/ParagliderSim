@@ -20,9 +20,10 @@ namespace ParagliderSim
         //Player
         Model playerModel;
         const float rotationSpeed = 0.1f;
-        const float moveSpeed = 200.0f;
+        float moveSpeed = 2.0f;
         float lefrightRot = MathHelper.PiOver2;
-        float updownRot = -MathHelper.Pi / 10.0f;
+        //float updownRot = -MathHelper.Pi / 10.0f;
+        float updownRot = 0;
         Matrix playerBodyRotation;
         Matrix playerWorld;
         Vector3 playerPosition = new Vector3(740, 250, -700);
@@ -68,6 +69,11 @@ namespace ParagliderSim
             : base(game)
         {
             this.game = game;
+
+            if (game.IsDebug)
+            {
+                moveSpeed = 150.0f;
+            }
         }
 
         public override void Initialize()
@@ -93,7 +99,7 @@ namespace ParagliderSim
             }
             else 
             {
-               
+                processInput(timeDifference);
             }
 
             base.Update(gameTime);
@@ -162,17 +168,22 @@ namespace ParagliderSim
         {
             Vector2 leftVingPoint = new Vector2(0, 0);
             Vector2 rightVingPoint = new Vector2(5, 0);
+            Vector2 moveVector = new Vector2(0, 1);
             float leftWingSpeed = moveSpeed;
             float rightWingSpeed = moveSpeed;
 
             KeyboardState keyState = Keyboard.GetState();
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
-                leftWingSpeed *= 0.5f;
+                leftWingSpeed *= 0.65f;
             if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
-                rightWingSpeed *= 0.5f;
+                rightWingSpeed *= 0.65f;
 
+            leftVingPoint += moveVector * leftWingSpeed * amount;
+            rightVingPoint += moveVector * rightWingSpeed * amount;
 
-
+            lefrightRot += (float)Math.Atan2(rightVingPoint.Y - leftVingPoint.Y, rightVingPoint.X - leftVingPoint.X);
+            AddToPlayerPosition(new Vector3(0,0,-1.0f) * ((leftWingSpeed + rightWingSpeed) / 2) * amount);
+            UpdateViewMatrix();
         }
 
         private void AddToPlayerPosition(Vector3 delta)
