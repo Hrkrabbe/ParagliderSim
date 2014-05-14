@@ -9,7 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using OculusRift.Oculus;
-
+using LTreesLibrary.Trees;
+using LTreesLibrary.Trees.Wind;
 
 namespace ParagliderSim
 {
@@ -60,7 +61,7 @@ namespace ParagliderSim
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
 
-        bool isDebug = false;
+        bool isDebug = true;
         //Oculus Rift
         bool orEnabled = true;
         #region ORVars
@@ -191,7 +192,8 @@ namespace ParagliderSim
             unitMeter = Content.Load<Model>(@"Models/unitMeter");
             house = Content.Load<Model>(@"Models/house2");
             waterBumpMap = Content.Load<Texture2D>("waterbump");
-
+            TreeProfile profile = Content.Load<TreeProfile>("Trees/Pine");
+            SimpleTree tree = profile.GenerateSimpleTree();
             skyDome = Content.Load<Model>(@"Models/SkyDome");
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
