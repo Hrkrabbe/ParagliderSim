@@ -16,11 +16,12 @@ namespace ParagliderSim
     public class Player : Microsoft.Xna.Framework.DrawableGameComponent
     {
         Game1 game;
+        ParaGliderWing currentWing = new ParaGliderWing("test", 2.0f, 5.0f);
 
         //Player
         Model playerModel;
         const float rotationSpeed = 0.1f;
-        float moveSpeed = 2.0f;
+        float moveSpeed = 150.0f;
         float lefrightRot = MathHelper.PiOver2;
         //float updownRot = -MathHelper.Pi / 10.0f;
         float updownRot = 0;
@@ -69,11 +70,6 @@ namespace ParagliderSim
             : base(game)
         {
             this.game = game;
-
-            if (game.IsDebug)
-            {
-                moveSpeed = 150.0f;
-            }
         }
 
         public override void Initialize()
@@ -166,23 +162,20 @@ namespace ParagliderSim
 
         private void processInput(float amount)
         {
-            Vector2 leftVingPoint = new Vector2(0, 0);
-            Vector2 rightVingPoint = new Vector2(5, 0);
-            Vector2 moveVector = new Vector2(0, 1);
-            float leftWingSpeed = moveSpeed;
-            float rightWingSpeed = moveSpeed;
+            moveSpeed = currentWing.Speed;
+            float leftWingFactor = 1;
+            float righWingFactor = 1;
 
             KeyboardState keyState = Keyboard.GetState();
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
-                leftWingSpeed *= 0.65f;
+                leftWingFactor = 0.65f;
             if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
-                rightWingSpeed *= 0.65f;
+                righWingFactor = 0.65f;
 
-            leftVingPoint += moveVector * leftWingSpeed * amount;
-            rightVingPoint += moveVector * rightWingSpeed * amount;
+            currentWing.move(amount, leftWingFactor, righWingFactor);
 
-            lefrightRot += (float)Math.Atan2(rightVingPoint.Y - leftVingPoint.Y, rightVingPoint.X - leftVingPoint.X);
-            AddToPlayerPosition(new Vector3(0,0,-1.0f) * ((leftWingSpeed + rightWingSpeed) / 2) * amount);
+            lefrightRot += currentWing.getRotation();
+            AddToPlayerPosition(currentWing.getMovementVector());
             UpdateViewMatrix();
         }
 

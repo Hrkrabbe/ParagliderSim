@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParaGliderWing.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="WorldComponent.cs" />
     <Compile Include="Terrain.cs" />
