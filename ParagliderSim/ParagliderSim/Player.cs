@@ -64,6 +64,11 @@ namespace ParagliderSim
             get { return isColliding; }
         }
 
+        public Matrix World
+        {
+            get { return playerWorld; }
+        }
+
         #endregion
 
         public Player(Game1 game)
@@ -101,7 +106,7 @@ namespace ParagliderSim
             base.Update(gameTime);
         }
 
-        public void Draw()
+        public override void Draw(GameTime gameTime)
         {
             Matrix[] transforms = new Matrix[playerModel.Bones.Count];
             playerModel.CopyAbsoluteBoneTransformsTo(transforms);

@@ -14,6 +14,11 @@ namespace ParagliderSim
 {
     public class Terrain
     {
+        public VertexMultitextured Vertices
+        {
+            get { return Vertices; }
+        }
+
         GraphicsDevice device;
 
         VertexMultitextured[] vertices;

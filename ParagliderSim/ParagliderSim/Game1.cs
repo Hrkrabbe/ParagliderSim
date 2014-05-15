@@ -22,6 +22,8 @@ namespace ParagliderSim
         GraphicsDevice device;
         Effect effect;
         Player player;
+        Gps gps;
+        RenderTarget2D currentRenderTarget;
 
         Vector3 lightDirection = new Vector3(1.0f, -1.0f, 1.0f);
         double  resolutionX = 1280,
@@ -131,6 +133,27 @@ namespace ParagliderSim
             get { return isDebug; }
         }
 
+        public Effect Effect 
+        {
+            get { return effect; }
+        }
+
+        public SpriteBatch SpriteBatch
+        {
+            get { return spriteBatch; }
+        }
+
+        /*
+        public ContentManager Content
+        {
+            get { return Content; }
+        } */
+
+        public RenderTarget2D CurrentRenderTarget
+        {
+            get { return currentRenderTarget; }
+        }
+
         #endregion
 
         public Game1()
@@ -165,6 +188,8 @@ namespace ParagliderSim
             device = graphics.GraphicsDevice;
             player = new Player(this);
             Components.Add(player);
+            gps = new Gps(this);
+            Components.Add(gps);
 
             if (orEnabled)
             {
@@ -413,7 +438,8 @@ namespace ParagliderSim
 
         private void SetLeftEye()
         {
-            device.SetRenderTarget(renderTargetLeft);
+            currentRenderTarget = renderTargetLeft;
+            device.SetRenderTarget(currentRenderTarget);
             device.Clear(Color.Black);
             viewMatrix = viewLeft;
             projectionMatrix = projLeft;
@@ -421,7 +447,8 @@ namespace ParagliderSim
 
         private void SetRightEye()
         {
-            device.SetRenderTarget(renderTargetRight);
+            currentRenderTarget = renderTargetRight;
+            device.SetRenderTarget(currentRenderTarget);
             device.Clear(Color.Black);
             viewMatrix = viewRight;
             projectionMatrix = projRight;
@@ -464,11 +491,11 @@ namespace ParagliderSim
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
-            player.Draw();
+            //player.Draw();
             DrawWater(time);
             base.Draw(gameTime);
-            DrawRefractionMap();
-            DrawReflectionMap();
+            //DrawRefractionMap();
+            //DrawReflectionMap();
             
             
             //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
@@ -480,7 +507,7 @@ namespace ParagliderSim
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             drawGameWorld();
-            player.Draw();
+            //player.Draw();
             DrawWater(time);
             base.Draw(gameTime);
             //DrawRefractionMap();
@@ -537,7 +564,6 @@ namespace ParagliderSim
             spriteBatch.Begin();
             spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.IsColliding.ToString(), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
-
         }
 
         private void DrawSkyDome(Matrix currentViewMatrix)
