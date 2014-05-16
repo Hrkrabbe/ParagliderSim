@@ -9,13 +9,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using OculusRift.Oculus;
+using LTreesLibrary.Trees;
+using LTreesLibrary.Trees.Wind;
+using LTreesLibrary.Pipeline;
 
 namespace ParagliderSim
 {
     public class Terrain
     {
         public VertexMultitextured Vertices
-        {
+        {           
             get { return Vertices; }
         }
 
@@ -36,7 +39,32 @@ namespace ParagliderSim
         Texture2D rockTexture;
         Texture2D snowTexture;
 
-        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture)
+        //Trees
+
+        String profileAssetFormat = "Trees/{0}";
+
+        String[] profileNames = new String[]
+        {
+            "Birch",
+            "Pine",
+            "Gardenwood",
+            "Graywood",
+            "Rug",
+            "Willow",
+        };
+        TreeProfile[] profiles;
+
+        TreeLineMesh linemesh;
+
+        int currentTree = 0;
+
+        SimpleTree tree;
+
+        WindStrengthSin wind;
+        TreeWindAnimator animator;
+        List<Vector3> treeList = new List<Vector3>();
+
+        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, ContentManager Content)
         {
             this.device = device;
             this.heightmap = heightmap;
@@ -51,6 +79,14 @@ namespace ParagliderSim
             SetUpIndices();
             CalculateNormals();
             CopyToBuffers();
+            wind = new WindStrengthSin();
+            animator = new TreeWindAnimator(wind);
+            LoadTreeGenerators(Content);
+            NewTree();
+            List<Vector3> treeList = GenerateTreePositions(vertices);
+
+
+
         }
 
         #region setup
@@ -256,6 +292,71 @@ namespace ParagliderSim
             return terrainHeight * terrainScale;
         }
 
+        #region Trees
+        void LoadTreeGenerators(ContentManager Content)
+        {
+
+            profiles = new TreeProfile[profileNames.Length];
+            for (int i = 0; i < profiles.Length; i++)
+            {
+                profiles[i] = Content.Load<TreeProfile>(String.Format(profileAssetFormat, profileNames[i]));
+            }
+        }
+
+        void NewTree()
+        {
+            // Generates a new tree using the currently selected tree profile
+            // We call TreeProfile.GenerateSimpleTree() which does three things for us:
+            // 1. Generates a tree skeleton
+            // 2. Creates a mesh for the branches
+            // 3. Creates a particle cloud (TreeLeafCloud) for the leaves
+            // The line mesh is just for testing and debugging
+            tree = profiles[1].GenerateSimpleTree();
+            linemesh = new TreeLineMesh(device, tree.Skeleton);
+        }
+
+
+        private List<Vector3> GenerateTreePositions(VertexMultitextured[] terrainVertices)
+        {
+
+
+            treeList.Add(terrainVertices[3310].Position);
+            treeList.Add(terrainVertices[3315].Position);
+            treeList.Add(terrainVertices[3320].Position);
+            treeList.Add(terrainVertices[3325].Position);
+
+            return treeList;
+        }
+
+        public void DrawTrees(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix)
+        {
+            //..
+
+            Matrix world = Matrix.Identity;
+            //Matrix scale = Matrix.CreateScale(0.0015f);
+            Matrix scale = Matrix.CreateScale(0.1f);
+            Matrix translation = Matrix.CreateTranslation(840, 195, -700);
+            //Matrix translation2 = Matrix.CreateTranslation(-3.0f, 0.0f, 0.0f);
+
+
+
+            foreach (Vector3 currentV3 in treeList)
+            {
+                device.BlendState = BlendState.AlphaBlend;
+
+                Matrix x = Matrix.CreateTranslation(currentV3);
+
+                tree.DrawTrunk(world * scale * x, viewMatrix, projectionMatrix);
+                tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
+                animator.Animate(tree.Skeleton, tree.AnimationState, gameTime);
+
+                device.BlendState = BlendState.Opaque;
+            }
+
+
+        }
+
+        #endregion
 
         public void Draw(Matrix viewMatrix, Matrix projectionMatrix, Effect effect, Vector3 lightDirection)
         {
