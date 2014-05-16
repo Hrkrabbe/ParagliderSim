@@ -322,8 +322,8 @@ namespace ParagliderSim
 
             treeList.Add(terrainVertices[3310].Position);
             treeList.Add(terrainVertices[3315].Position);
-            treeList.Add(terrainVertices[3320].Position);
-            treeList.Add(terrainVertices[3325].Position);
+            treeList.Add(terrainVertices[6000].Position);
+            treeList.Add(terrainVertices[7000].Position);
 
             return treeList;
         }

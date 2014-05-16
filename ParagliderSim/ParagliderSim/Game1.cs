@@ -499,8 +499,9 @@ namespace ParagliderSim
             drawGameWorld();
             //player.Draw();
             DrawWater(time);
-            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
+            
             base.Draw(gameTime);
+            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             //DrawRefractionMap();
             //DrawReflectionMap();
             
@@ -516,8 +517,9 @@ namespace ParagliderSim
             drawGameWorld();
             //player.Draw();
             DrawWater(time);
-            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
+            
             base.Draw(gameTime);
+            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             //DrawRefractionMap();
             //DrawReflectionMap();
             //DrawWater(time);
