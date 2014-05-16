@@ -69,6 +69,16 @@ namespace ParagliderSim
             get { return playerWorld; }
         }
 
+        public float RotationY
+        {
+            get { return lefrightRot; }
+        }
+
+        public float RotationX
+        {
+            get { return updownRot; }
+        }
+
         #endregion
 
         public Player(Game1 game)
@@ -304,5 +314,15 @@ namespace ParagliderSim
             }
         }
         #endregion
+
+        
+        public Quaternion getRotation()
+        {
+            Quaternion quat = Quaternion.CreateFromRotationMatrix(
+                Matrix.CreateRotationZ(0.0f)
+                * Matrix.CreateRotationY(lefrightRot)
+                * Matrix.CreateRotationZ(updownRot));
+            return quat;
+        } 
     }
 }
