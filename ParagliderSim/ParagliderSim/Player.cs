@@ -82,6 +82,7 @@ namespace ParagliderSim
             base.Initialize();
         }
 
+
         protected override void LoadContent()
         {
             playerModel = game.Content.Load<Model>(@"Models/CharacterModelNew");
@@ -124,7 +125,7 @@ namespace ParagliderSim
             }
         }
 
-        public void initPlayerSphere()
+        private void initPlayerSphere()
         {
             foreach (ModelMesh mesh in playerModel.Meshes)
             {

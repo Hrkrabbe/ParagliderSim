@@ -20,10 +20,11 @@ namespace ParagliderSim
         RenderTarget2D renderTarget;
         Texture2D screen;
         Texture2D arrow;
+        Model model;
         Game1 game;
-        Matrix screenWorld;
+        Matrix screenWorld, GpsWorld;
         float rotation = 0.0f;
-        Vector2 origin;
+        Vector2 origin, arrowPos;
 
         VertexPositionNormalTexture[] vertices;
 
@@ -43,21 +44,28 @@ namespace ParagliderSim
         {
             renderTarget = new RenderTarget2D(GraphicsDevice, 32, 32, false, SurfaceFormat.Bgr565, DepthFormat.None);
             arrow = game.Content.Load<Texture2D>(@"Images/arrow");
+            model = game.Content.Load<Model>(@"Models/phone");
 
+            //origin = new Vector2(0, 0);
             origin.X = arrow.Width / 2;
             origin.Y = arrow.Height / 2;
+            arrowPos.X = renderTarget.Width / 2;
+            arrowPos.Y = renderTarget.Height / 2;
+
             base.LoadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
             rotation += 0.1f;
-            screenWorld = Matrix.Identity * Matrix.CreateTranslation(new Vector3(700,200,-700));
+            GpsWorld = Matrix.Identity * Matrix.CreateScale(0.005f) * Matrix.CreateTranslation(new Vector3(700, 200, -700));
+            //screenWorld = Matrix.Identity * Matrix.CreateTranslation(new Vector3(700,200,-700));
+            screenWorld = GpsWorld * (Matrix.CreateScale(2000) * Matrix.CreateTranslation(0,0, 0));
 
             GraphicsDevice.SetRenderTarget(renderTarget);
-            //GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.White);
             game.SpriteBatch.Begin();
-            game.SpriteBatch.Draw(arrow, renderTarget.Bounds, null, Color.White, rotation, origin,SpriteEffects.None,0.0f);
+            game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin,1.0f, SpriteEffects.None,0.0f);
             game.SpriteBatch.End();
 
             screen = (Texture2D)renderTarget;
@@ -67,9 +75,20 @@ namespace ParagliderSim
 
         public override void Draw(GameTime gameTime)
         {
-            
-            
-            //GraphicsDevice.SetRenderTarget(game.CurrentRenderTarget); 
+            Matrix[] transforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (BasicEffect beffect in mesh.Effects)
+                {
+                    beffect.EnableDefaultLighting();
+                    beffect.World = transforms[mesh.ParentBone.Index] * GpsWorld;
+                    beffect.View = game.ViewMatrix;
+                    beffect.Projection = game.ProjectionMatrix;
+                }
+                mesh.Draw();
+            }
 
             game.Effect.CurrentTechnique = game.Effect.Techniques["TexturedNoShading"];
             game.Effect.Parameters["xView"].SetValue(game.ViewMatrix);
