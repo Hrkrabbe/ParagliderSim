@@ -156,6 +156,11 @@ namespace ParagliderSim
             get { return currentRenderTarget; }
         }
 
+        public Player Player
+        {
+            get { return player; }
+        }
+
         #endregion
 
         public Game1()

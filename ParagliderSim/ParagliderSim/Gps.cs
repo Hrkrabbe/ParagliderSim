@@ -25,6 +25,10 @@ namespace ParagliderSim
         Matrix screenWorld, GpsWorld;
         float rotation = 0.0f;
         Vector2 origin, arrowPos;
+        Vector3 GpsPos = new Vector3(0, -0.7f, -0.4f);
+        Vector3 GpsRotX;
+        float scale = 0.8f;
+        Vector3 target = new Vector3(740, 195, -700);
 
         VertexPositionNormalTexture[] vertices;
 
@@ -57,10 +61,12 @@ namespace ParagliderSim
 
         public override void Update(GameTime gameTime)
         {
-            rotation += 0.1f;
-            GpsWorld = Matrix.Identity * Matrix.CreateScale(0.005f) * Matrix.CreateTranslation(new Vector3(700, 200, -700));
+            CalculateRotation();
+            //GpsWorld = Matrix.Identity * Matrix.CreateScale(0.005f) * Matrix.CreateTranslation(new Vector3(700, 200, -700));
             //screenWorld = Matrix.Identity * Matrix.CreateTranslation(new Vector3(700,200,-700));
-            screenWorld = GpsWorld * (Matrix.CreateScale(2000) * Matrix.CreateTranslation(0,0, 0));
+            CalculateWorldGPS();
+            CalculateWorldScreen();
+            //screenWorld = GpsWorld * (Matrix.CreateScale(2000) * Matrix.CreateTranslation(0,0, 0));
 
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.White);
@@ -117,5 +123,43 @@ namespace ParagliderSim
             vertices[5] = new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector2(1, 1));
         }
 
+        /*private void CalculateWorldGPS()
+        {
+            Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
+                               * Matrix.CreateFromQuaternion(game.Player.getRotation())
+                               * Matrix.CreateTranslation(game.Player.Position);
+            Vector3 translation = Vector3.Transform(game.Player.Position + GpsPos,
+                                           positionRotationMatrix);
+
+            GpsWorld = Matrix.CreateScale(0.005f) * Matrix.CreateFromQuaternion(game.Player.getRotation()) * Matrix.CreateTranslation(translation);
+        }*/
+
+        private void CalculateWorldGPS()
+        {
+            Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
+                               * game.Player.PlayerBodyRotation
+                               * Matrix.CreateTranslation(game.Player.Position);
+            Vector3 translation = Vector3.Transform(game.Player.Position + GpsPos,
+                                           positionRotationMatrix);
+
+            GpsWorld = Matrix.CreateScale(0.005f * scale) * game.Player.PlayerBodyRotation * Matrix.CreateTranslation(translation);
+        }
+
+
+        private void CalculateWorldScreen()
+        {
+            Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
+                               * game.Player.PlayerBodyRotation
+                               * Matrix.CreateTranslation(game.Player.Position);
+            Vector3 translation = Vector3.Transform(game.Player.Position + GpsPos + (new Vector3(-0.08f,0.06f, 0.04f) * scale),
+                                           positionRotationMatrix);
+
+            screenWorld = Matrix.CreateScale(0.16f * scale) * game.Player.PlayerBodyRotation * Matrix.CreateTranslation(translation);
+        }
+
+        private void CalculateRotation()
+        {
+            rotation = (-(float)Math.Atan2(-target.Z + game.Player.Position.Z, target.X - game.Player.Position.X)) + game.Player.RotationY + (float)Math.PI /2 ;
+        }
     }
 }

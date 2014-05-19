@@ -79,6 +79,11 @@ namespace ParagliderSim
             get { return updownRot; }
         }
 
+        public Matrix PlayerBodyRotation
+        {
+            get { return playerBodyRotation; }
+        }
+
         #endregion
 
         public Player(Game1 game)
@@ -91,6 +96,7 @@ namespace ParagliderSim
         {
             base.Initialize();
         }
+
 
 
         protected override void LoadContent()
@@ -319,9 +325,9 @@ namespace ParagliderSim
         public Quaternion getRotation()
         {
             Quaternion quat = Quaternion.CreateFromRotationMatrix(
-                Matrix.CreateRotationZ(0.0f)
-                * Matrix.CreateRotationY(lefrightRot)
-                * Matrix.CreateRotationZ(updownRot));
+                //Matrix.CreateRotationZ(0.0f)*
+                 Matrix.CreateRotationY(lefrightRot)
+                * Matrix.CreateRotationX(updownRot));
             return quat;
         } 
     }
