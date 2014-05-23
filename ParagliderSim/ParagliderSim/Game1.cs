@@ -240,9 +240,13 @@ namespace ParagliderSim
             refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
 
+<<<<<<< HEAD
 
             terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
 
+=======
+            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
+>>>>>>> 9625dc67da3d15f2b130790483aeba3e9397cce7
             
             SetUpWaterVertices();
             waterVertexDeclaration = new VertexDeclaration(VertexPositionTexture.VertexDeclaration.GetVertexElements());
