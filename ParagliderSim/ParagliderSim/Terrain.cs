@@ -24,6 +24,7 @@ namespace ParagliderSim
 
         GraphicsDevice device;
 
+        Game1 game;
         VertexMultitextured[] vertices;
         IndexBuffer indexBuffer;
         VertexBuffer vertexBuffer;
@@ -64,8 +65,9 @@ namespace ParagliderSim
         TreeWindAnimator animator;
         List<Vector3> treeList = new List<Vector3>();
 
-        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
         {
+            this.game = game;
             this.device = device;
             this.heightmap = heightmap;
             this.grassTexture = grassTexture;
