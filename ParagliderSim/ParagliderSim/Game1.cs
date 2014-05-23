@@ -45,6 +45,7 @@ namespace ParagliderSim
         Texture2D sandTexture;
         Texture2D rockTexture;
         Texture2D snowTexture;
+        Texture2D treeMap;
         Terrain terrain;
 
         //Water
@@ -225,7 +226,7 @@ namespace ParagliderSim
             house = Content.Load<Model>(@"Models/house2");
             waterBumpMap = Content.Load<Texture2D>("waterbump");
             skyDome = Content.Load<Model>(@"Models/SkyDome");
-
+            treeMap = Content.Load<Texture2D>(@"Images/treemap");
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -235,7 +236,7 @@ namespace ParagliderSim
             refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
 
-            terrain = new Terrain(device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, Content);           
+            terrain = new Terrain(device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
             
             SetUpWaterVertices();
             waterVertexDeclaration = new VertexDeclaration(VertexPositionTexture.VertexDeclaration.GetVertexElements());
@@ -500,7 +501,8 @@ namespace ParagliderSim
 
             SetLeftEye();
             DrawSkyDome(viewMatrix);
-            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection); 
+            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            
             drawGameWorld();
             //player.Draw();
             DrawWater(time);
@@ -518,7 +520,8 @@ namespace ParagliderSim
             SetRightEye();
 
             DrawSkyDome(viewMatrix);
-            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);           
+            terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
+            
             drawGameWorld();
             //player.Draw();
             DrawWater(time);

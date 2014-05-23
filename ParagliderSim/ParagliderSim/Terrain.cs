@@ -38,7 +38,7 @@ namespace ParagliderSim
         Texture2D sandTexture;
         Texture2D rockTexture;
         Texture2D snowTexture;
-
+        Texture2D treeMap;
         //Trees
 
         String profileAssetFormat = "Trees/{0}";
@@ -64,7 +64,7 @@ namespace ParagliderSim
         TreeWindAnimator animator;
         List<Vector3> treeList = new List<Vector3>();
 
-        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, ContentManager Content)
+        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
         {
             this.device = device;
             this.heightmap = heightmap;
@@ -72,7 +72,7 @@ namespace ParagliderSim
             this.sandTexture = sandTexture;
             this.rockTexture = rockTexture;
             this.snowTexture = snowTexture;
-            this.terrainScale = terrainScale;
+            this.terrainScale = terrainScale;            
 
             LoadHeightData(heightmap);
             SetUpVertices();
@@ -83,7 +83,8 @@ namespace ParagliderSim
             animator = new TreeWindAnimator(wind);
             LoadTreeGenerators(Content);
             NewTree();
-            List<Vector3> treeList = GenerateTreePositions(vertices);
+            
+            List<Vector3> treeList = GenerateTreePositions(treeMap, vertices);
 
 
 
@@ -328,32 +329,90 @@ namespace ParagliderSim
             return treeList;
         }
 
+        private List<Vector3> GenerateTreePositions(Texture2D treeMap, VertexMultitextured[] terrainVertices)
+        {
+            Color[] treeMapColors = new Color[treeMap.Width * treeMap.Height];
+            treeMap.GetData(treeMapColors);
+
+            int[,] noiseData = new int[treeMap.Width, treeMap.Height];
+            for (int x = 0; x < treeMap.Width; x++)
+                for (int y = 0; y < treeMap.Height; y++)
+                    noiseData[x, y] = treeMapColors[y + x * treeMap.Height].R;
+            float terrainWidth1 = getWidthUnits();
+            float terrainHeight1 = getHeightUnits();
+
+            //List<Vector3> treeList = new List<Vector3>(); 
+            Random random = new Random();
+
+            for (int x = 0; x < terrainWidth; x++)
+            {
+                for (int y = 0; y < terrainHeight; y++)
+                {
+                    float terrHeight = heightData[x, y];
+                    if ((terrHeight > 5) && (terrHeight < 15))
+                    {
+                        float flatness = Vector3.Dot(terrainVertices[x + y * (int)terrainWidth].Normal, new Vector3(0, 1, 0));
+                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
+                        if (flatness > minFlatness)
+                        {
+                            float relx = (float)x / (float)terrainWidth;
+                            float rely = (float)y / (float)terrainHeight;
+
+                            float noiseValueAtCurrentPosition = noiseData[(int)(relx * treeMap.Width), (int)(rely * treeMap.Height)];
+                            float treeDensity;
+                            if (noiseValueAtCurrentPosition > 200)
+                                treeDensity = 5;
+                            else if (noiseValueAtCurrentPosition > 150)
+                                treeDensity = 0;
+                            else if (noiseValueAtCurrentPosition > 100)
+                                treeDensity = 0;
+                            else
+                                treeDensity = 0;
+
+                            for (int currDetail = 0; currDetail < treeDensity; currDetail++)
+                            {
+                                float rand1 = (float)random.Next(1000) / 1000.0f;
+                                float rand2 = (float)random.Next(1000) / 1000.0f;
+                                Vector3 treePos = new Vector3(((float)x - rand1)*terrainScale, 0, (-(float)y - rand2)*terrainScale);
+                                treePos.Y = heightData[x, y]*terrainScale;
+                                treeList.Add(treePos);
+                            }
+                        }
+                    }
+                }
+            } 
+            
+            treeList.Add(terrainVertices[6000].Position);
+            return treeList;
+        }
+
+
         public void DrawTrees(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix)
         {
             //..
 
             Matrix world = Matrix.Identity;
             //Matrix scale = Matrix.CreateScale(0.0015f);
-            Matrix scale = Matrix.CreateScale(0.1f);
-            Matrix translation = Matrix.CreateTranslation(840, 195, -700);
+            Matrix scale = Matrix.CreateScale(0.015f);
+          //  Matrix translation = Matrix.CreateTranslation(840, 195, -700);
             //Matrix translation2 = Matrix.CreateTranslation(-3.0f, 0.0f, 0.0f);
-
 
 
             foreach (Vector3 currentV3 in treeList)
             {
-                device.BlendState = BlendState.AlphaBlend;
-
+                //device.BlendState = BlendState.AlphaBlend;
+                
                 Matrix x = Matrix.CreateTranslation(currentV3);
-
-                tree.DrawTrunk(world * scale * x, viewMatrix, projectionMatrix);
+                device.BlendState = BlendState.Opaque;
+                device.DepthStencilState = DepthStencilState.Default;
+                tree.DrawTrunk(world * scale * x , viewMatrix, projectionMatrix);
                 tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
                 animator.Animate(tree.Skeleton, tree.AnimationState, gameTime);
 
-                device.BlendState = BlendState.Opaque;
+                //device.BlendState = BlendState.Opaque;
             }
 
-
+            
         }
 
         #endregion
