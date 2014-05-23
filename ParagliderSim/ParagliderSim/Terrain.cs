@@ -70,7 +70,7 @@ namespace ParagliderSim
         Effect bbEffect;
 
 
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D treeTexture, ContentManager Content)
 
 
         {
@@ -81,8 +81,8 @@ namespace ParagliderSim
             this.sandTexture = sandTexture;
             this.rockTexture = rockTexture;
             this.snowTexture = snowTexture;
-            this.terrainScale = terrainScale;            
-
+            this.terrainScale = terrainScale;
+            this.treeTexture = treeTexture;
             LoadHeightData(heightmap);
             SetUpVertices();
             SetUpIndices();

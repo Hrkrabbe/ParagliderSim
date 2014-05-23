@@ -242,7 +242,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
+            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content);           
 
 
             
