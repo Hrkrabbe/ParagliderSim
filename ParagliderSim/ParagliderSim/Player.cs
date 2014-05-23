@@ -44,6 +44,7 @@ namespace ParagliderSim
         bool isColliding;
         
         #region properties
+
         public Vector3 Position
         {
             get { return playerPosition; }
@@ -211,23 +212,36 @@ namespace ParagliderSim
 
         private void UpdateViewMatrix()
         {
+            Vector3 cameraPosition;
             playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
 
             if (game.OREnabled)
             {
                 cameraRotation = Matrix.CreateFromQuaternion(OculusClient.GetPredictedOrientation()) * playerBodyRotation;
+                //Neck movement
+                
+                Vector3 neck = new Vector3(0, 0.3f, 0);
+                Vector3 neck2 = Vector3.Transform(neck, playerBodyRotation);
+                cameraPosition = playerPosition - neck2;
+                neck = Vector3.Transform(neck, Matrix.CreateFromQuaternion((OculusClient.GetPredictedOrientation()) * 0.65f)* playerBodyRotation);
+                cameraPosition += neck;
+                 
+                //cameraPosition = playerPosition;
             }
             else
+            {
                 cameraRotation = playerBodyRotation;
+                cameraPosition = playerPosition;
+            }
 
             cameraOriginalTarget = new Vector3(0, 0, -1);
             cameraRotatedTarget = Vector3.Transform(cameraOriginalTarget, cameraRotation);
-            cameraFinalTarget = playerPosition + cameraRotatedTarget;
+            cameraFinalTarget = cameraPosition + cameraRotatedTarget;
 
             cameraOriginalUpVector = new Vector3(0, 1, 0);
             cameraRotatedUpVector = Vector3.Transform(cameraOriginalUpVector, cameraRotation);
 
-            game.ViewMatrix = Matrix.CreateLookAt(playerPosition, cameraFinalTarget, cameraRotatedUpVector);
+            game.ViewMatrix = Matrix.CreateLookAt(cameraPosition, cameraFinalTarget, cameraRotatedUpVector);
 
 
 
