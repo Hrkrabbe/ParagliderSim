@@ -72,10 +72,7 @@ namespace ParagliderSim
 
         public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
 
-<<<<<<< HEAD
-=======
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
->>>>>>> 9625dc67da3d15f2b130790483aeba3e9397cce7
+
         {
             this.game = game;
             this.device = device;
