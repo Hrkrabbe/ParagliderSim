@@ -24,6 +24,7 @@ namespace ParagliderSim
 
         GraphicsDevice device;
 
+        Game1 game;
         VertexMultitextured[] vertices;
         IndexBuffer indexBuffer;
         VertexBuffer vertexBuffer;
@@ -39,6 +40,7 @@ namespace ParagliderSim
         Texture2D rockTexture;
         Texture2D snowTexture;
         Texture2D treeMap;
+        Texture2D treeTexture;
         //Trees
 
         String profileAssetFormat = "Trees/{0}";
@@ -63,9 +65,15 @@ namespace ParagliderSim
         WindStrengthSin wind;
         TreeWindAnimator animator;
         List<Vector3> treeList = new List<Vector3>();
+        VertexBuffer treeVertexBuffer;
+        VertexDeclaration treeVertexDeclaration;
+        Effect bbEffect;
 
-        public Terrain(GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
+
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, ContentManager Content)
+
         {
+            this.game = game;
             this.device = device;
             this.heightmap = heightmap;
             this.grassTexture = grassTexture;
@@ -85,8 +93,8 @@ namespace ParagliderSim
             NewTree();
             
             List<Vector3> treeList = GenerateTreePositions(treeMap, vertices);
-
-
+            CreateBillboardVerticesFromList(treeList);
+            bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
 
         }
 
@@ -338,8 +346,7 @@ namespace ParagliderSim
             for (int x = 0; x < treeMap.Width; x++)
                 for (int y = 0; y < treeMap.Height; y++)
                     noiseData[x, y] = treeMapColors[y + x * treeMap.Height].R;
-            float terrainWidth1 = getWidthUnits();
-            float terrainHeight1 = getHeightUnits();
+
 
             //List<Vector3> treeList = new List<Vector3>(); 
             Random random = new Random();
@@ -349,7 +356,7 @@ namespace ParagliderSim
                 for (int y = 0; y < terrainHeight; y++)
                 {
                     float terrHeight = heightData[x, y];
-                    if ((terrHeight > 5) && (terrHeight < 15))
+                    if ((terrHeight > 5) && (terrHeight < 215))
                     {
                         float flatness = Vector3.Dot(terrainVertices[x + y * (int)terrainWidth].Normal, new Vector3(0, 1, 0));
                         float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
@@ -363,9 +370,9 @@ namespace ParagliderSim
                             if (noiseValueAtCurrentPosition > 200)
                                 treeDensity = 5;
                             else if (noiseValueAtCurrentPosition > 150)
-                                treeDensity = 0;
+                                treeDensity = 3;
                             else if (noiseValueAtCurrentPosition > 100)
-                                treeDensity = 0;
+                                treeDensity = 1;
                             else
                                 treeDensity = 0;
 
@@ -386,6 +393,27 @@ namespace ParagliderSim
             return treeList;
         }
 
+        private void CreateBillboardVerticesFromList(List<Vector3> treeList)
+        {
+            VertexPositionTexture[] billboardVertices = new VertexPositionTexture[treeList.Count * 6];
+            int i = 0;
+            foreach (Vector3 currentV3 in treeList)
+            {
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(0, 0));
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(1, 0));
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(1, 1));
+
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(0, 0));
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(1, 1));
+                billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(0, 1));
+            }
+
+            VertexDeclaration vertexDeclaration = VertexPositionTexture.VertexDeclaration;
+
+            treeVertexBuffer = new VertexBuffer(device, vertexDeclaration, billboardVertices.Length, BufferUsage.WriteOnly);
+            treeVertexBuffer.SetData(billboardVertices);
+            treeVertexDeclaration = vertexDeclaration;
+        }
 
         public void DrawTrees(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix)
         {
@@ -393,7 +421,7 @@ namespace ParagliderSim
 
             Matrix world = Matrix.Identity;
             //Matrix scale = Matrix.CreateScale(0.0015f);
-            Matrix scale = Matrix.CreateScale(0.015f);
+            Matrix scale = Matrix.CreateScale(0.0015f);
           //  Matrix translation = Matrix.CreateTranslation(840, 195, -700);
             //Matrix translation2 = Matrix.CreateTranslation(-3.0f, 0.0f, 0.0f);
 
@@ -413,6 +441,28 @@ namespace ParagliderSim
             }
 
             
+        }
+
+        public void DrawBillboards(Matrix ViewMatrix, Matrix projectionMatrix)
+        {
+            bbEffect.CurrentTechnique = bbEffect.Techniques["CylBillboard"];
+            bbEffect.Parameters["xWorld"].SetValue(Matrix.Identity);
+            bbEffect.Parameters["xView"].SetValue(ViewMatrix);
+            bbEffect.Parameters["xProjection"].SetValue(projectionMatrix);
+            bbEffect.Parameters["xCamPos"].SetValue(game.Player.Position);
+            bbEffect.Parameters["xAllowedRotDir"].SetValue(new Vector3(0, 1, 0));
+            bbEffect.Parameters["xBillboardTexture"].SetValue(treeTexture);
+
+            device.BlendState = BlendState.AlphaBlend;
+            foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                device.SetVertexBuffer(treeVertexBuffer);
+                int noVertices = treeVertexBuffer.VertexCount;
+                int noTriangles = noVertices / 3;
+                device.DrawPrimitives(PrimitiveType.TriangleList, 0, noTriangles);
+            }
+            device.BlendState = BlendState.Opaque;
         }
 
         #endregion

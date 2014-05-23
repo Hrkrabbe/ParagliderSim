@@ -22,6 +22,7 @@ namespace ParagliderSim
         SpriteFont font;
         GraphicsDevice device;
         Effect effect;
+        Effect bbEffect;
         Player player;
         Gps gps;
         RenderTarget2D currentRenderTarget;
@@ -47,6 +48,7 @@ namespace ParagliderSim
         Texture2D snowTexture;
         Texture2D treeMap;
         Terrain terrain;
+        Texture2D treeTexture;
 
         //Water
         const float waterHeight = 80.0f;
@@ -227,6 +229,8 @@ namespace ParagliderSim
             waterBumpMap = Content.Load<Texture2D>("waterbump");
             skyDome = Content.Load<Model>(@"Models/SkyDome");
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
+            bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
+            treeTexture = Content.Load<Texture2D>(@"Textures/tree");
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -236,7 +240,9 @@ namespace ParagliderSim
             refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
 
-            terrain = new Terrain(device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
+
+            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, Content);           
+
             
             SetUpWaterVertices();
             waterVertexDeclaration = new VertexDeclaration(VertexPositionTexture.VertexDeclaration.GetVertexElements());
@@ -508,7 +514,8 @@ namespace ParagliderSim
             DrawWater(time);
             
             base.Draw(gameTime);
-            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
+            //terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
+            terrain.DrawBillboards(ViewMatrix, projectionMatrix);
             //DrawRefractionMap();
             //DrawReflectionMap();
             
