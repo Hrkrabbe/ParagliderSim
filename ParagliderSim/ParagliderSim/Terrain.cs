@@ -430,14 +430,19 @@ namespace ParagliderSim
             foreach (Vector3 currentV3 in treeList)
             {
                 //device.BlendState = BlendState.AlphaBlend;
-                
+                Vector2 distance = new Vector2(currentV3.X - game.Player.Position.X, currentV3.Z - game.Player.Position.Z);
                 Matrix x = Matrix.CreateTranslation(currentV3);
-                device.BlendState = BlendState.Opaque;
-                device.DepthStencilState = DepthStencilState.Default;
-                tree.DrawTrunk(world * scale * x , viewMatrix, projectionMatrix);
-                tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
-                animator.Animate(tree.Skeleton, tree.AnimationState, gameTime);
-
+                if (distance.Length() < 100.0f)
+                {
+                    
+                    device.BlendState = BlendState.Opaque;
+                    device.DepthStencilState = DepthStencilState.Default;
+                    tree.DrawTrunk(world * scale * x, viewMatrix, projectionMatrix);
+                    tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
+                    animator.Animate(tree.Skeleton, tree.AnimationState, gameTime);
+                }
+                //else
+                    //tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
                 //device.BlendState = BlendState.Opaque;
             }
 
