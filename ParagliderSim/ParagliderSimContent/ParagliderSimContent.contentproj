@@ -299,6 +299,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Content>
+    <Compile Include="Textures\treeBillboard.png">
+      <Name>treeBillboard</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Shader\bbEffect.fx">

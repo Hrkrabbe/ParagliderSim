@@ -357,10 +357,10 @@ namespace ParagliderSim
                 for (int y = 0; y < terrainHeight; y++)
                 {
                     float terrHeight = heightData[x, y];
-                    if ((terrHeight > 5) && (terrHeight < 215))
+                    if ((terrHeight > 5) && (terrHeight < 415))
                     {
                         float flatness = Vector3.Dot(terrainVertices[x + y * (int)terrainWidth].Normal, new Vector3(0, 1, 0));
-                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
+                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(10));
                         if (flatness > minFlatness)
                         {
                             float relx = (float)x / (float)terrainWidth;
@@ -369,9 +369,9 @@ namespace ParagliderSim
                             float noiseValueAtCurrentPosition = noiseData[(int)(relx * treeMap.Width), (int)(rely * treeMap.Height)];
                             float treeDensity;
                             if (noiseValueAtCurrentPosition > 200)
-                                treeDensity = 5;
+                                treeDensity = 8;
                             else if (noiseValueAtCurrentPosition > 150)
-                                treeDensity = 3;
+                                treeDensity = 4;
                             else if (noiseValueAtCurrentPosition > 100)
                                 treeDensity = 1;
                             else
@@ -388,9 +388,9 @@ namespace ParagliderSim
                         }
                     }
                 }
-            } 
-            
-            treeList.Add(terrainVertices[6000].Position);
+            }
+            Vector3 testTree = new Vector3(833.0f, 214.0f, -625.0f);
+            treeList.Add(testTree);
             return treeList;
         }
 
@@ -400,6 +400,7 @@ namespace ParagliderSim
             int i = 0;
             foreach (Vector3 currentV3 in treeList)
             {
+
                 billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(0, 0));
                 billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(1, 0));
                 billboardVertices[i++] = new VertexPositionTexture(currentV3, new Vector2(1, 1));
@@ -462,11 +463,13 @@ namespace ParagliderSim
             device.BlendState = BlendState.AlphaBlend;
             foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
             {
-                pass.Apply();
-                device.SetVertexBuffer(treeVertexBuffer);
-                int noVertices = treeVertexBuffer.VertexCount;
-                int noTriangles = noVertices / 3;
-                device.DrawPrimitives(PrimitiveType.TriangleList, 0, noTriangles);
+                {
+                    pass.Apply();
+                    device.SetVertexBuffer(treeVertexBuffer);
+                    int noVertices = treeVertexBuffer.VertexCount;
+                    int noTriangles = noVertices / 3;
+                    device.DrawPrimitives(PrimitiveType.TriangleList, 0, noTriangles);
+                }
             }
             device.BlendState = BlendState.Opaque;
         }

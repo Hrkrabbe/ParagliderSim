@@ -230,7 +230,7 @@ namespace ParagliderSim
             skyDome = Content.Load<Model>(@"Models/SkyDome");
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
-            treeTexture = Content.Load<Texture2D>(@"Textures/tree");
+            treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -516,7 +516,7 @@ namespace ParagliderSim
             DrawWater(time);
             
             base.Draw(gameTime);
-            //terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
+            terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             terrain.DrawBillboards(ViewMatrix, projectionMatrix);
             //DrawRefractionMap();
             //DrawReflectionMap();
@@ -655,6 +655,7 @@ namespace ParagliderSim
             worldComponents.Add(new WorldComponent(unitMeter, 0.03f, 0, new Vector3(716, 210.2f, -700)));
             worldComponents.Add(new WorldComponent(unitMeter, 0.05f, 0, new Vector3(706, 220.2f, -700)));
             worldComponents.Add(new WorldComponent(unitMeter, 0.1f, 0, new Vector3(696, 240.2f, -700)));
+            worldComponents.Add(new WorldComponent(unitMeter, 0.5f, 0, new Vector3(840, 197.2f, -584)));
         }
 
         public void drawGameWorld()
