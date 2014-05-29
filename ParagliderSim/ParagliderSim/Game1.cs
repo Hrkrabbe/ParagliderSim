@@ -219,7 +219,7 @@ namespace ParagliderSim
 
             font = Content.Load<SpriteFont>("SpriteFont1");
             effect = Content.Load<Effect>(@"Shader/effects");
-            heightmap = Content.Load<Texture2D>(@"Images/Heightmap2");
+            heightmap = Content.Load<Texture2D>(@"Images/output");
             
             grassTexture = Content.Load<Texture2D>(@"Textures/grass");
             sandTexture = Content.Load<Texture2D>(@"Textures/sand");

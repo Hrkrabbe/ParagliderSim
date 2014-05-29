@@ -325,7 +325,7 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      Output.Color = lerp(nearColor, farColor, blendFactor);
      Output.Color *= lightingFactor;
        
-	 Output.Color = lerp(Output.Color, (1.0, 1.0, 1.0), PSIn.Fog);
+	 Output.Color = lerp(Output.Color, (217.0/255.0, 224.0/255.0, 225.0/255.0), PSIn.Fog);
 	    
 	if (Clipping)
 	  clip(PSIn.clipDistances);
