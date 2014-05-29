@@ -97,6 +97,7 @@ namespace ParagliderSim
             CreateBillboardVerticesFromList(treeList);
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
 
+
         }
 
         #region setup
@@ -504,6 +505,7 @@ namespace ParagliderSim
             effect.Parameters["xWorld"].SetValue(worldMatrix);
             effect.Parameters["xView"].SetValue(viewMatrix);
             effect.Parameters["xProjection"].SetValue(projectionMatrix);
+            effect.Parameters["xCamPos"].SetValue(game.Player.Position);
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {

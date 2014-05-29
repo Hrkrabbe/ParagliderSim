@@ -242,49 +242,6 @@ technique TexturedNoShading
     }
 }
 
-//------- Technique: PointSprites --------
-
-VertexToPixel PointSpriteVS(float3 inPos: POSITION0, float2 inTexCoord: TEXCOORD0)
-{
-    VertexToPixel Output = (VertexToPixel)0;
-
-    float3 center = mul(inPos, xWorld);
-    float3 eyeVector = center - xCamPos;
-
-    float3 sideVector = cross(eyeVector,xCamUp);
-    sideVector = normalize(sideVector);
-    float3 upVector = cross(sideVector,eyeVector);
-    upVector = normalize(upVector);
-
-    float3 finalPosition = center;
-    finalPosition += (inTexCoord.x-0.5f)*sideVector*0.5f*xPointSpriteSize;
-    finalPosition += (0.5f-inTexCoord.y)*upVector*0.5f*xPointSpriteSize;
-
-    float4 finalPosition4 = float4(finalPosition, 1);
-
-    float4x4 preViewProjection = mul (xView, xProjection);
-    Output.Position = mul(finalPosition4, preViewProjection);
-
-    Output.TextureCoords = inTexCoord;
-
-    return Output;
-}
-
-PixelToFrame PointSpritePS(VertexToPixel PSIn) : COLOR0
-{
-    PixelToFrame Output = (PixelToFrame)0;
-    Output.Color = tex2D(TextureSampler, PSIn.TextureCoords);
-    return Output;
-}
-
-technique PointSprites
-{
-    pass Pass0
-    {   
-        VertexShader = compile vs_2_0 PointSpriteVS();
-        PixelShader  = compile ps_2_0 PointSpritePS();
-    }
-}
 
 //------- Technique: Multitextured --------
 struct MTVertexToPixel
@@ -297,6 +254,8 @@ struct MTVertexToPixel
     float4 TextureWeights    : TEXCOORD3;
 	float    Depth            : TEXCOORD4;
 	float4 clipDistances     : TEXCOORD5;
+	float3 fragmentPos         : COLOR1;
+	float Fog				: TEXCOORD6;
 };
 
 struct MTPixelToFrame
@@ -312,10 +271,15 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     
     Output.Position = mul(inPos, preWorldViewProjection);
     Output.Normal = mul(normalize(inNormal), xWorld);
+	//float3x3 rotationMatrix = (float3x3)xWorld;
+	//Output.Normal = mul(inNormal, rotationMatrix ); 
     Output.TextureCoords = inTexCoords;
     Output.LightDirection.xyz = -xLightDirection;
     Output.LightDirection.w = 1;    
     Output.TextureWeights = inTexWeights;
+
+	Output.fragmentPos = mul(inPos.xyz, xWorld); 
+	//Output.Fog = saturate((length(xCamPos - xWorld) -100)/(600-100));
 
 	Output.clipDistances = dot(inPos, ClipPlane0);
 	Output.Depth = Output.Position.z/Output.Position.w;
@@ -327,13 +291,13 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
 
 MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
 {
+
     MTPixelToFrame Output = (MTPixelToFrame)0;        
     
     float lightingFactor = 1;
     if (xEnableLighting)
         lightingFactor = saturate(saturate(dot(PSIn.Normal, PSIn.LightDirection)) + xAmbient);
         
-
 
 	 float blendDistance = 0.997f;
 	 float blendWidth = 0.005f;
@@ -345,6 +309,7 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      farColor += tex2D(TextureSampler1, PSIn.TextureCoords)*PSIn.TextureWeights.y;
      farColor += tex2D(TextureSampler2, PSIn.TextureCoords)*PSIn.TextureWeights.z;
      farColor += tex2D(TextureSampler3, PSIn.TextureCoords)*PSIn.TextureWeights.w;
+
      
      float4 nearColor;
      float2 nearTextureCoords = PSIn.TextureCoords*20;
@@ -353,9 +318,15 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      nearColor += tex2D(TextureSampler2, nearTextureCoords)*PSIn.TextureWeights.z;
      nearColor += tex2D(TextureSampler3, nearTextureCoords)*PSIn.TextureWeights.w;
  
+	float d = distance(xCamPos, PSIn.fragmentPos);
+	 float l = saturate((d-100)/(500));
+
+
      Output.Color = lerp(nearColor, farColor, blendFactor);
      Output.Color *= lightingFactor;
-        
+       
+	 //Output.Color = lerp(lerp(nearColor, farColor, blendFactor), (0.5, 0.5, 0.5), l) * lightingFactor;
+	    
 	if (Clipping)
 	  clip(PSIn.clipDistances);
     

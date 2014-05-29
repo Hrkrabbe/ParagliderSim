@@ -218,7 +218,7 @@ namespace ParagliderSim
 
             font = Content.Load<SpriteFont>("SpriteFont1");
             effect = Content.Load<Effect>(@"Shader/effects");
-            heightmap = Content.Load<Texture2D>(@"Images/heightmap2");
+            heightmap = Content.Load<Texture2D>(@"Images/Heightmap2");
             
             grassTexture = Content.Load<Texture2D>(@"Textures/grass");
             sandTexture = Content.Load<Texture2D>(@"Textures/sand");
@@ -559,6 +559,10 @@ namespace ParagliderSim
                 foreach (BasicEffect beffect in mesh.Effects)
                 {
                     beffect.EnableDefaultLighting();
+                    beffect.FogEnabled = true;
+                    beffect.FogStart = 1.0f;
+                    beffect.FogEnd = 3.0f;
+                    beffect.FogColor = new Vector3(1.0f, 1.0f, 1.0f);
                     beffect.World = transforms[mesh.ParentBone.Index] * Matrix.CreateScale(0.01f) ;
                     beffect.View = viewMatrix;
                     beffect.Projection = projectionMatrix;
@@ -577,6 +581,10 @@ namespace ParagliderSim
                 foreach (BasicEffect beffect in mesh.Effects)
                 {
                     beffect.EnableDefaultLighting();
+                    beffect.FogEnabled = true;
+                    beffect.FogStart = 35.0f;
+                    beffect.FogEnd = 100.0f;
+                    beffect.FogColor = new Vector3(0.0f, 0.0f, 0.0f);
                     beffect.World = transforms[mesh.ParentBone.Index] * Matrix.CreateScale(0.01f) * Matrix.CreateTranslation(position) ;
                     beffect.View = viewMatrix;
                     beffect.Projection = projectionMatrix;
