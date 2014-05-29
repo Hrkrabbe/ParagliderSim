@@ -279,7 +279,7 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     Output.TextureWeights = inTexWeights;
 
 	Output.fragmentPos = mul(inPos.xyz, xWorld); 
-	//Output.Fog = saturate((length(xCamPos - xWorld) -100)/(600-100));
+	Output.Fog = saturate((length(xCamPos-inPos.xyz) -100)/(5000-100));
 
 	Output.clipDistances = dot(inPos, ClipPlane0);
 	Output.Depth = Output.Position.z/Output.Position.w;
@@ -318,14 +318,14 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      nearColor += tex2D(TextureSampler2, nearTextureCoords)*PSIn.TextureWeights.z;
      nearColor += tex2D(TextureSampler3, nearTextureCoords)*PSIn.TextureWeights.w;
  
-	float d = distance(xCamPos, PSIn.fragmentPos);
-	 float l = saturate((d-100)/(500));
+	//float d = distance(xCamPos, PSIn.fragmentPos);
+	 //float l = saturate((d-100)/(500));
 
 
      Output.Color = lerp(nearColor, farColor, blendFactor);
      Output.Color *= lightingFactor;
        
-	 //Output.Color = lerp(lerp(nearColor, farColor, blendFactor), (0.5, 0.5, 0.5), l) * lightingFactor;
+	 Output.Color = lerp(Output.Color, (1.0, 1.0, 1.0), PSIn.Fog);
 	    
 	if (Clipping)
 	  clip(PSIn.clipDistances);
