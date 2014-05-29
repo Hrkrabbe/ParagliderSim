@@ -17,6 +17,7 @@ namespace ParagliderSim
     /// </summary>
     public class Gps : Microsoft.Xna.Framework.DrawableGameComponent
     {
+        SpriteFont font;
         RenderTarget2D renderTarget;
         Texture2D screen;
         Texture2D arrow;
@@ -49,12 +50,13 @@ namespace ParagliderSim
             renderTarget = new RenderTarget2D(GraphicsDevice, 32, 32, false, SurfaceFormat.Bgr565, DepthFormat.None);
             arrow = game.Content.Load<Texture2D>(@"Images/arrow");
             model = game.Content.Load<Model>(@"Models/phone");
+            font = game.Content.Load<SpriteFont>(@"Fonts/SpriteFont2");
 
             //origin = new Vector2(0, 0);
             origin.X = arrow.Width / 2;
             origin.Y = arrow.Height / 2;
             arrowPos.X = renderTarget.Width / 2;
-            arrowPos.Y = renderTarget.Height / 2;
+            arrowPos.Y = renderTarget.Height / 4;
 
             base.LoadContent();
         }
@@ -71,7 +73,8 @@ namespace ParagliderSim
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.White);
             game.SpriteBatch.Begin();
-            game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin,1.0f, SpriteEffects.None,0.0f);
+            game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin,0.6f, SpriteEffects.None,0.0f);
+            game.SpriteBatch.DrawString(font, "TEST", new Vector2(renderTarget.Width /4f, renderTarget.Height / 1.5f), Color.Black);
             game.SpriteBatch.End();
 
             screen = (Texture2D)renderTarget;
@@ -115,11 +118,11 @@ namespace ParagliderSim
         {
             vertices = new VertexPositionNormalTexture[6];
             vertices[0] = new VertexPositionNormalTexture(new Vector3(0,0,0), new Vector3(0,1,0), new Vector2(0, 1));
-            vertices[1] = new VertexPositionNormalTexture(new Vector3(0, 0, -1), new Vector3(0, 1, 0), new Vector2(0, 0));
-            vertices[2] = new VertexPositionNormalTexture(new Vector3(1, 0, -1), new Vector3(0, 1, 0), new Vector2(1, 0));
+            vertices[1] = new VertexPositionNormalTexture(new Vector3(0, 0, -1.5f), new Vector3(0, 1, 0), new Vector2(0, 0));
+            vertices[2] = new VertexPositionNormalTexture(new Vector3(1, 0, -1.5f), new Vector3(0, 1, 0), new Vector2(1, 0));
 
             vertices[3] = new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector2(0, 1));
-            vertices[4] = new VertexPositionNormalTexture(new Vector3(1, 0, -1), new Vector3(0, 1, 0), new Vector2(1, 0));
+            vertices[4] = new VertexPositionNormalTexture(new Vector3(1, 0, -1.5f), new Vector3(0, 1, 0), new Vector2(1, 0));
             vertices[5] = new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector2(1, 1));
         }
 
@@ -151,7 +154,7 @@ namespace ParagliderSim
             Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
                                * game.Player.PlayerBodyRotation
                                * Matrix.CreateTranslation(game.Player.Position);
-            Vector3 translation = Vector3.Transform(game.Player.Position + GpsPos + (new Vector3(-0.08f,0.06f, 0.04f) * scale),
+            Vector3 translation = Vector3.Transform(game.Player.Position + GpsPos + (new Vector3(-0.08f,0.06f, 0.1f) * scale),
                                            positionRotationMatrix);
 
             screenWorld = Matrix.CreateScale(0.16f * scale) * game.Player.PlayerBodyRotation * Matrix.CreateTranslation(translation);

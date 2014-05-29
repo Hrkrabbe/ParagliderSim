@@ -17,6 +17,9 @@ namespace ParagliderSim
 {
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        bool isDebug = true;
+        bool orEnabled = true;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont font;
@@ -73,9 +76,9 @@ namespace ParagliderSim
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
 
-        bool isDebug = true;
+
         //Oculus Rift
-        bool orEnabled = true;
+
         #region ORVars
         OculusClient oculusClient;
         Effect oculusRiftDistortionShader;
@@ -169,6 +172,11 @@ namespace ParagliderSim
             get { return player; }
         }
 
+        public SpriteFont Font
+        {
+            get { return font; }
+        }
+
         #endregion
 
         public Game1()
@@ -221,7 +229,7 @@ namespace ParagliderSim
         {
             spriteBatch = new SpriteBatch(device);
 
-            font = Content.Load<SpriteFont>("SpriteFont1");
+            font = Content.Load<SpriteFont>(@"Fonts/SpriteFont1");
             effect = Content.Load<Effect>(@"Shader/effects");
             heightmap = Content.Load<Texture2D>(@"Images/output");
             
@@ -468,7 +476,7 @@ namespace ParagliderSim
         {
             currentRenderTarget = renderTargetLeft;
             device.SetRenderTarget(currentRenderTarget);
-            device.Clear(Color.Black);
+            device.Clear(new Color(new Vector3(217, 224, 225)));
             viewMatrix = viewLeft;
             projectionMatrix = projLeft;
         }
@@ -477,7 +485,7 @@ namespace ParagliderSim
         {
             currentRenderTarget = renderTargetRight;
             device.SetRenderTarget(currentRenderTarget);
-            device.Clear(Color.Black);
+            device.Clear(new Color(new Vector3(217, 224, 225)));
             viewMatrix = viewRight;
             projectionMatrix = projRight;
         }
@@ -509,7 +517,7 @@ namespace ParagliderSim
         {
             float time = (float)gameTime.TotalGameTime.TotalMilliseconds / 100.0f;
           
-            device.Clear(Color.Black);
+            device.Clear(new Color(new Vector3(217,224,225)));
             SetProjectionOffset();
 
             DrawRefractionMap();
@@ -612,7 +620,7 @@ namespace ParagliderSim
 
         private void DrawSkyDome(Matrix currentViewMatrix)
         {
-            device.Clear(Color.Black);
+            device.Clear(new Color(new Vector3(217, 224, 225)));
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.None;
             rs.FillMode = FillMode.Solid;

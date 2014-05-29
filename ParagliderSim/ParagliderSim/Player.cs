@@ -42,14 +42,25 @@ namespace ParagliderSim
         Vector3 cameraRotatedUpVector;
 
         //Physics
-        float maxVel = 5f;
-        float velocity = 1;
-        float acceleration;
+        //float maxVel = 5f;
+        //float velocity = 1;
+        //float acceleration;
         Vector2 wind = new Vector2(0.1f,0);
 
         //Collision
         bool isColliding;
-        
+
+        //arms
+        Model leftArmModel;
+        Model rightArmModel;
+        Matrix leftArmWorld;
+        Matrix rightArmWorld;
+        float maxArmRot = MathHelper.PiOver4;
+        Vector3 leftArmPos = new Vector3 (-0.22f,-0.277f,0.064f);
+        Vector3 rightArmPos = new Vector3(0.22f, -0.277f, 0.064f);
+        float leftArmRotX;
+        float rightArmRotX;
+
         #region properties
 
         public Vector3 Position
@@ -109,7 +120,9 @@ namespace ParagliderSim
 
         protected override void LoadContent()
         {
-            playerModel = game.Content.Load<Model>(@"Models/CharacterModelNew");
+            playerModel = game.Content.Load<Model>(@"Models/body");
+            leftArmModel = game.Content.Load<Model>(@"Models/leftArm");
+            rightArmModel = game.Content.Load<Model>(@"Models/rightArm");
 
             initPlayerSphere();
             Mouse.SetPosition(game.GraphicsDevice.Viewport.Width / 2, game.GraphicsDevice.Viewport.Height / 2);
@@ -127,6 +140,9 @@ namespace ParagliderSim
             {
                 processInput(timeDifference);
             }
+
+            CalculateWorldLeftArm();
+            CalculateWorldRightArm();
 
             base.Update(gameTime);
         }
@@ -147,6 +163,66 @@ namespace ParagliderSim
                 }
                 mesh.Draw();
             }
+
+            drawArms();
+        }
+
+        public void drawArms()
+        {
+            //Left arm
+            Matrix[] transforms = new Matrix[leftArmModel.Bones.Count];
+           leftArmModel.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in leftArmModel.Meshes)
+            {
+                foreach (BasicEffect beffect in mesh.Effects)
+                {
+                    beffect.EnableDefaultLighting();
+                    beffect.World = transforms[mesh.ParentBone.Index] * leftArmWorld;
+                    beffect.View = game.ViewMatrix;
+                    beffect.Projection = game.ProjectionMatrix;
+                }
+                mesh.Draw();
+            }
+
+            //Right arm
+            transforms = new Matrix[rightArmModel.Bones.Count];
+            rightArmModel.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in rightArmModel.Meshes)
+            {
+                foreach (BasicEffect beffect in mesh.Effects)
+                {
+                    beffect.EnableDefaultLighting();
+                    beffect.World = transforms[mesh.ParentBone.Index] * rightArmWorld;
+                    beffect.View = game.ViewMatrix;
+                    beffect.Projection = game.ProjectionMatrix;
+                }
+                mesh.Draw();
+            }
+ 
+        }
+
+        private void CalculateWorldLeftArm()
+        {
+            Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
+                               * game.Player.PlayerBodyRotation
+                               * Matrix.CreateTranslation(game.Player.Position);
+            Vector3 translation = Vector3.Transform(game.Player.Position + leftArmPos,
+                                           positionRotationMatrix);
+
+            leftArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationX(leftArmRotX) * Matrix.CreateRotationY(lefrightRot) * Matrix.CreateTranslation(translation);
+        }
+
+        private void CalculateWorldRightArm()
+        {
+            Matrix positionRotationMatrix = Matrix.CreateTranslation(-game.Player.Position)
+                               * game.Player.PlayerBodyRotation
+                               * Matrix.CreateTranslation(game.Player.Position);
+            Vector3 translation = Vector3.Transform(game.Player.Position + rightArmPos,
+                                           positionRotationMatrix);
+
+            rightArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationX(rightArmRotX) * Matrix.CreateRotationY(lefrightRot) * Matrix.CreateTranslation(translation);
         }
 
         private void initPlayerSphere()
@@ -192,6 +268,11 @@ namespace ParagliderSim
 
         private void processInput(float amount)
         {
+            //arms
+            leftArmRotX = 0f;
+            rightArmRotX = 0f;
+
+
             moveSpeed = currentWing.Speed;
             float leftAcceleration = 0.25f;
             float rightAcceleration = 0.25f;
@@ -199,9 +280,19 @@ namespace ParagliderSim
 
             KeyboardState keyState = Keyboard.GetState();
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
+            {
+                leftArmRotX = -maxArmRot;
                 leftAcceleration = 0;
+            }
             if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
+            {
+                rightArmRotX = -maxArmRot;
                 rightAcceleration = 0;
+            }
+            if (keyState.IsKeyDown(Keys.R))
+            {
+                OculusClient.ResetSensorOrientation(0);
+            }
 
             //acceleration
             
