@@ -32,6 +32,7 @@ namespace ParagliderSim
         private int terrainWidth;
         private int terrainHeight;
         private float[,] heightData;
+        private float[,] updraftData;
 
         float terrainScale;
         Texture2D heightmap;
@@ -70,7 +71,7 @@ namespace ParagliderSim
         Effect bbEffect;
 
 
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D treeTexture, ContentManager Content)
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap)
 
 
         {
@@ -88,6 +89,7 @@ namespace ParagliderSim
             SetUpIndices();
             CalculateNormals();
             CopyToBuffers();
+            LoadUpdraftData(updraftMap);
             wind = new WindStrengthSin();
             animator = new TreeWindAnimator(wind);
             LoadTreeGenerators(Content);
@@ -514,6 +516,30 @@ namespace ParagliderSim
                 device.SetVertexBuffer(vertexBuffer);
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertices.Length, 0, indices.Length / 3);
             }
+        }
+
+        private void LoadUpdraftData(Texture2D updraftMap)
+        {
+
+            Color[] updraftMapColors = new Color[terrainWidth * terrainHeight];
+            updraftMap.GetData(updraftMapColors);
+
+            updraftData = new float[terrainWidth, terrainHeight];
+            for (int x = 0; x < terrainWidth; x++)
+                for (int y = 0; y < terrainHeight; y++)
+                    updraftData[x, y] = updraftMapColors[x + y * terrainWidth].R / 5.0f;
+        }
+
+        public float getUpdraft(Vector3 position)
+        {
+            int x, y;
+            x = (int)Math.Floor(position.X / terrainScale);
+            y = (int)Math.Floor(-position.Z / terrainScale);
+
+            if ((x > 0) && (x < terrainWidth) && (y > 0) && (y < terrainHeight))
+                return updraftData[x, y] * 0.01f;
+            else
+                return 0f;
         }
     }
 }

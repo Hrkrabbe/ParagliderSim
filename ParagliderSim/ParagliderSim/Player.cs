@@ -16,7 +16,7 @@ namespace ParagliderSim
     public class Player : Microsoft.Xna.Framework.DrawableGameComponent
     {
         Game1 game;
-        ParaGliderWing currentWing = new ParaGliderWing("test", 2.0f, 5.0f);
+        ParaGliderWing currentWing = new ParaGliderWing("test", 5.0f, 5.0f);
 
         //Player
         Model playerModel;
@@ -25,6 +25,7 @@ namespace ParagliderSim
         float lefrightRot = MathHelper.PiOver2;
         //float updownRot = -MathHelper.Pi / 10.0f;
         float updownRot = 0;
+        float rotZ = 0;
         Matrix playerBodyRotation;
         Matrix playerWorld;
         Vector3 playerPosition = new Vector3(740, 250, -700);
@@ -39,6 +40,12 @@ namespace ParagliderSim
         Vector3 rotatedVector;
         Vector3 cameraOriginalUpVector;
         Vector3 cameraRotatedUpVector;
+
+        //Physics
+        float maxVel = 5f;
+        float velocity = 1;
+        float acceleration;
+        Vector2 wind = new Vector2(0.1f,0);
 
         //Collision
         bool isColliding;
@@ -186,25 +193,37 @@ namespace ParagliderSim
         private void processInput(float amount)
         {
             moveSpeed = currentWing.Speed;
-            float leftWingFactor = 1;
-            float righWingFactor = 1;
+            float leftAcceleration = 0.25f;
+            float rightAcceleration = 0.25f;
+            float dragX = 3f / 8f;
 
             KeyboardState keyState = Keyboard.GetState();
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
-                leftWingFactor = 0.65f;
+                leftAcceleration = 0;
             if (keyState.IsKeyDown(Keys.Right) || keyState.IsKeyDown(Keys.D))
-                righWingFactor = 0.65f;
+                rightAcceleration = 0;
 
-            currentWing.move(amount, leftWingFactor, righWingFactor);
+            //acceleration
+            
+            //drag
 
-            lefrightRot += currentWing.getRotation();
-            AddToPlayerPosition(currentWing.getMovementVector());
+
+            //downforce
+            float downforce = 0.05f;
+
+            currentWing.move(wind, game.Terrain.getUpdraft(playerPosition), downforce, leftAcceleration, rightAcceleration, amount, dragX);
+
+            lefrightRot += currentWing.getRotationY();
+            rotZ = currentWing.getRotationZ();
+
+            Vector3 upDraft = new Vector3(0, 1, 0) * game.Terrain.getUpdraft(playerPosition);
+            AddToPlayerPosition(currentWing.getMovementVector() + (upDraft*amount));
             UpdateViewMatrix();
         }
 
         private void AddToPlayerPosition(Vector3 delta)
         {
-            playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
+            playerBodyRotation = Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot) ;
             rotatedVector = Vector3.Transform(delta, playerBodyRotation);
             playerPosition += rotatedVector * moveSpeed;
             isColliding = checkCollision();
@@ -213,7 +232,7 @@ namespace ParagliderSim
         private void UpdateViewMatrix()
         {
             Vector3 cameraPosition;
-            playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
+            playerBodyRotation = Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot);
 
             if (game.OREnabled)
             {

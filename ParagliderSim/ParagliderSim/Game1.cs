@@ -49,6 +49,7 @@ namespace ParagliderSim
         Texture2D treeMap;
         Terrain terrain;
         Texture2D treeTexture;
+        Texture2D updraftMap;
 
         //Water
         const float waterHeight = 80.0f;
@@ -68,7 +69,7 @@ namespace ParagliderSim
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
 
-        bool isDebug = true;
+        bool isDebug = false;
         //Oculus Rift
         bool orEnabled = true;
         #region ORVars
@@ -231,6 +232,7 @@ namespace ParagliderSim
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
             treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
+            updraftMap = Content.Load<Texture2D>(@"Images/updraftmaptest");
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -242,7 +244,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content);           
+            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content, updraftMap);           
 
 
             
@@ -597,7 +599,7 @@ namespace ParagliderSim
         private void DrawInfo()
         {
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.IsColliding.ToString(), new Vector2(20, 20), Color.Red);
+            spriteBatch.DrawString(font, player.Position.ToString() +"\n"+ halfIPD * 2 + "\n" + player.IsColliding.ToString() + "\n" + terrain.getUpdraft(player.Position), new Vector2(20, 20), Color.Red);
             spriteBatch.End();
         }
 
