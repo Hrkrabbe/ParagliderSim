@@ -270,9 +270,9 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     float4x4 preWorldViewProjection = mul (xWorld, preViewProjection);
     
     Output.Position = mul(inPos, preWorldViewProjection);
-    Output.Normal = mul(normalize(inNormal), xWorld);
-	//float3x3 rotationMatrix = (float3x3)xWorld;
-	//Output.Normal = mul(inNormal, rotationMatrix ); 
+    //Output.Normal = mul(normalize(inNormal), xWorld);
+	float3x3 rotationMatrix = (float3x3)xWorld;
+	Output.Normal = mul(inNormal, rotationMatrix ); 
     Output.TextureCoords = inTexCoords;
     Output.LightDirection.xyz = -xLightDirection;
     Output.LightDirection.w = 1;    
