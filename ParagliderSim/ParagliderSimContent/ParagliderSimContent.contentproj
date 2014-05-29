@@ -299,6 +299,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Images\grassmap.bmp">
+      <Name>grassmap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Content Include="Images\treemap.jpg">
       <Name>treemap</Name>
       <Importer>TextureImporter</Importer>

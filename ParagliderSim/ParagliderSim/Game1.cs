@@ -47,12 +47,13 @@ namespace ParagliderSim
         Texture2D rockTexture;
         Texture2D snowTexture;
         Texture2D treeMap;
+        Texture2D grassMap;
         Terrain terrain;
         Texture2D treeTexture;
         Texture2D updraftMap;
 
         //Water
-        const float waterHeight = 80.0f;
+        const float waterHeight = 95.0f;
         RenderTarget2D refractionRenderTarget;
         Texture2D refractionMap;
         RenderTarget2D reflectionRenderTarget;
@@ -233,6 +234,7 @@ namespace ParagliderSim
             waterBumpMap = Content.Load<Texture2D>("waterbump");
             skyDome = Content.Load<Model>(@"Models/SkyDome2");
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
+            grassMap = Content.Load<Texture2D>(@"Images/grassmap");
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
             treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
             updraftMap = Content.Load<Texture2D>(@"Images/updraftmaptest");
@@ -247,7 +249,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content, updraftMap);           
+            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap);           
 
 
             
@@ -328,6 +330,7 @@ namespace ParagliderSim
             device.Clear(Color.Black);
             DrawSkyDome(reflectionViewMatrix);
             terrain.Draw(reflectionViewMatrix, projectionMatrix, effect, lightDirection);
+            terrain.DrawBillboards(reflectionViewMatrix, projectionMatrix);
             effect.Parameters["Clipping"].SetValue(false);
             device.SetRenderTarget(null);
             reflectionMap = reflectionRenderTarget;
