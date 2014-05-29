@@ -228,7 +228,7 @@ namespace ParagliderSim
             unitMeter = Content.Load<Model>(@"Models/unitMeter");
             house = Content.Load<Model>(@"Models/house2");
             waterBumpMap = Content.Load<Texture2D>("waterbump");
-            skyDome = Content.Load<Model>(@"Models/SkyDome");
+            skyDome = Content.Load<Model>(@"Models/SkyDome2");
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
             treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
@@ -416,7 +416,7 @@ namespace ParagliderSim
 
         private void SetProjectionOffset()
         {
-            viewCenter = OculusClient.GetScreenSize().X * 0.212f; // 0.25f
+            viewCenter = OculusClient.GetScreenSize().X * 0.212f; // 0.25f 0.212f
             eyeProjectionShift = viewCenter - OculusClient.GetLensSeparationDistance() * 0.5f;
             projectionCenterOffset = 4.0f * eyeProjectionShift / OculusClient.GetScreenSize().X;
 
