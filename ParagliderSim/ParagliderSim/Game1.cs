@@ -63,7 +63,10 @@ namespace ParagliderSim
         Texture2D waterBumpMap;
         Vector3 windDirection = new Vector3(0, 0, 1);
 
-      
+        //Fog
+        float fogStart = 100;
+        float fogEnd = 5000;
+
         //Camera and movement
         Matrix viewMatrix;
         Matrix projectionMatrix, originalProjectionMatrix;
@@ -244,7 +247,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content, updraftMap);           
+            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, treeTexture, Content, updraftMap);           
 
 
             

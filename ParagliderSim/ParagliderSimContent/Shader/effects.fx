@@ -36,7 +36,8 @@ float xWaveHeight;
 float xTime;
 float xWindForce;
 float3 xWindDirection;
-
+float FogStart;
+float FogEnd;
 //------- Technique: Clipping Plane Fix --------
 
 bool Clipping;
@@ -279,7 +280,7 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     Output.TextureWeights = inTexWeights;
 
 	Output.fragmentPos = mul(inPos.xyz, xWorld); 
-	Output.Fog = saturate((length(xCamPos-inPos.xyz) -100)/(5000-100));
+	Output.Fog = saturate((length(xCamPos-inPos.xyz) -FogStart)/(FogEnd-FogStart));
 
 	Output.clipDistances = dot(inPos, ClipPlane0);
 	Output.Depth = Output.Position.z/Output.Position.w;

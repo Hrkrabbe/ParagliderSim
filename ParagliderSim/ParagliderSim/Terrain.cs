@@ -70,8 +70,11 @@ namespace ParagliderSim
         VertexDeclaration treeVertexDeclaration;
         Effect bbEffect;
 
+        //Fog
+        float fogStart;
+        float fogEnd;
 
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap)
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap)
 
 
         {
@@ -83,6 +86,8 @@ namespace ParagliderSim
             this.rockTexture = rockTexture;
             this.snowTexture = snowTexture;
             this.terrainScale = terrainScale;
+            this.fogStart = fogStart;
+            this.fogEnd = fogEnd;
             this.treeTexture = treeTexture;
             LoadHeightData(heightmap);
             SetUpVertices();
@@ -462,7 +467,8 @@ namespace ParagliderSim
             bbEffect.Parameters["xCamPos"].SetValue(game.Player.Position);
             bbEffect.Parameters["xAllowedRotDir"].SetValue(new Vector3(0, 1, 0));
             bbEffect.Parameters["xBillboardTexture"].SetValue(treeTexture);
-
+            bbEffect.Parameters["FogStart"].SetValue(fogStart);
+            bbEffect.Parameters["FogEnd"].SetValue(fogEnd);
             device.BlendState = BlendState.AlphaBlend;
             foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
             {
@@ -508,6 +514,8 @@ namespace ParagliderSim
             effect.Parameters["xView"].SetValue(viewMatrix);
             effect.Parameters["xProjection"].SetValue(projectionMatrix);
             effect.Parameters["xCamPos"].SetValue(game.Player.Position);
+            effect.Parameters["FogStart"].SetValue(fogStart);
+            effect.Parameters["FogEnd"].SetValue(fogEnd);
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
