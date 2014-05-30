@@ -384,7 +384,7 @@ namespace ParagliderSim
                     if ((terrHeight > 7) && (terrHeight < 250))
                     {
                         float flatness = Vector3.Dot(terrainVertices[x + y * (int)terrainWidth].Normal, new Vector3(0, 1, 0));
-                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(10));
+                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
                         if (flatness > minFlatness)
                         {
                             float relx = (float)x / (float)terrainWidth;
@@ -476,6 +476,7 @@ namespace ParagliderSim
 
         public void DrawBillboards(Matrix ViewMatrix, Matrix projectionMatrix)
         {
+ 
             bbEffect.CurrentTechnique = bbEffect.Techniques["CylBillboard"];
             bbEffect.Parameters["xWorld"].SetValue(Matrix.Identity);
             bbEffect.Parameters["xView"].SetValue(ViewMatrix);

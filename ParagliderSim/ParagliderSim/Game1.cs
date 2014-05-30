@@ -17,7 +17,7 @@ namespace ParagliderSim
 {
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        bool isDebug = false;
+        bool isDebug = true;
         bool orEnabled = true;
 
         GraphicsDeviceManager graphics;
@@ -259,7 +259,8 @@ namespace ParagliderSim
 
             PresentationParameters pp = device.PresentationParameters;
          //   refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight);
-            refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
+            //refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
+            refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
 
 
@@ -317,7 +318,7 @@ namespace ParagliderSim
         }
         private void DrawRefractionMap()
         {
-            Plane refractionPlane = CreatePlane(waterHeight + 1.5f, new Vector3(0, -1, 0), viewMatrix, false);
+            Plane refractionPlane = CreatePlane(waterHeight + 4.5f, new Vector3(0, -1, 0), viewMatrix, false);
 
             //refractionPlane = CreatePlane(30.0045F, new Vector3(0, -1, 0), viewMatrix, false);
             effect.Parameters["ClipPlane0"].SetValue(new Vector4(refractionPlane.Normal, refractionPlane.D));
@@ -541,8 +542,7 @@ namespace ParagliderSim
             base.Draw(gameTime);
             terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             terrain.DrawBillboards(ViewMatrix, projectionMatrix);
-            //DrawRefractionMap();
-            //DrawReflectionMap();
+
             
             
             //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
@@ -561,9 +561,6 @@ namespace ParagliderSim
             base.Draw(gameTime);
             terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             terrain.DrawBillboards(ViewMatrix, projectionMatrix);
-            //DrawRefractionMap();
-            //DrawReflectionMap();
-            //DrawWater(time);
             //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
             //    DrawCollision();
 
