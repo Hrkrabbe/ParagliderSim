@@ -29,7 +29,7 @@ namespace ParagliderSim
         Vector3 GpsPos = new Vector3(0, -0.7f, -0.4f);
         //Vector3 GpsRotX;
         float scale = 0.8f;
-        Vector3 target = new Vector3(740, 195, -700);
+        Vector3 target;
 
         VertexPositionNormalTexture[] vertices;
 
@@ -57,6 +57,8 @@ namespace ParagliderSim
             origin.Y = arrow.Height / 2;
             arrowPos.X = renderTarget.Width / 2;
             arrowPos.Y = renderTarget.Height / 4;
+
+            target = game.Target.Position;
 
             base.LoadContent();
         }

@@ -86,7 +86,7 @@ namespace ParagliderSim
         MouseState originalMouseState;
 
         //target
-
+        Target target;
 
         //Oculus Rift
 
@@ -193,6 +193,11 @@ namespace ParagliderSim
             get { return waterHeight; }
         }
 
+        public Target Target
+        {
+            get { return target; }
+        }
+
         #endregion
 
         public Game1()
@@ -229,6 +234,8 @@ namespace ParagliderSim
             Components.Add(player);
             gps = new Gps(this);
             Components.Add(gps);
+            target = new Target(this, new Vector3(740, 250, -700));
+            Components.Add(target);
 
             if (orEnabled)
             {
