@@ -620,7 +620,9 @@ namespace ParagliderSim
 
         private void DrawSkyDome(Matrix currentViewMatrix)
         {
-            device.Clear(new Color(new Vector3(217, 224, 225)));
+            //device.Clear(new Color(new Vector3(135f, 164f, 211f)));
+            device.Clear(new Color(169f/255f, 199f/255f, 229f/255f));
+            //device.Clear(Color.Blue);
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.None;
             rs.FillMode = FillMode.Solid;

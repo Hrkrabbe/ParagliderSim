@@ -231,7 +231,7 @@ namespace ParagliderSim
             {
                 originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
             }
-            originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
+            //originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
         }
 
         #region movement
