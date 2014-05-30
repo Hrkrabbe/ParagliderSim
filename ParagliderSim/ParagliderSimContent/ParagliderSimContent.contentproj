@@ -304,6 +304,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Images\fieldmap.png">
+      <Name>fieldmap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Content Include="Images\treemap.jpg">
       <Name>treemap</Name>
       <Importer>TextureImporter</Importer>
