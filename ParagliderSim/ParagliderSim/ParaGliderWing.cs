@@ -10,7 +10,7 @@ namespace ParagliderSim
     {
         String name;
         float velocity;
-        float maxVelocity = 2;
+        //float maxVelocity = 2;
         float width;
         Vector3 leftVingPoint;
         Vector3 rightVingPoint;

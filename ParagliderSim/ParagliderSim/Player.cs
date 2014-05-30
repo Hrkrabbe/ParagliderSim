@@ -280,7 +280,12 @@ namespace ParagliderSim
                 updownRot = padState.ThumbSticks.Left.Y * 0.153f * -1f;
             }
 
+
+            //downforce
+            float downforce = 0.05f;
             moveSpeed = currentWing.Speed;
+
+            //acceleration
             float leftAcceleration =((float)Math.Sin(updownRot) * -9.8f) +  0.25f;
             float rightAcceleration = ((float)Math.Sin(updownRot) * -9.8f) + 0.25f;
             float dragX = 3f / 8f;
@@ -322,14 +327,6 @@ namespace ParagliderSim
             {
                 OculusClient.ResetSensorOrientation(0);
             }
-
-            //acceleration
-            
-            //drag
-
-
-            //downforce
-            float downforce = 0.05f;
 
             currentWing.move(wind, game.Terrain.getUpdraft(playerPosition), downforce, leftAcceleration, rightAcceleration, amount, dragX);
 

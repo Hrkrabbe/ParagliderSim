@@ -370,7 +370,7 @@ namespace ParagliderSim
             int[,] noiseData = new int[treeMap.Width, treeMap.Height];
             for (int x = 0; x < treeMap.Width; x++)
                 for (int y = 0; y < treeMap.Height; y++)
-                    noiseData[x, y] = treeMapColors[y + x * treeMap.Height].R;
+                    noiseData[x, y] = treeMapColors[x + y * treeMap.Height].R;
 
 
             //List<Vector3> treeList = new List<Vector3>(); 

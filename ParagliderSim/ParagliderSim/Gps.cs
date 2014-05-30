@@ -27,7 +27,7 @@ namespace ParagliderSim
         float rotation = 0.0f;
         Vector2 origin, arrowPos;
         Vector3 GpsPos = new Vector3(0, -0.7f, -0.4f);
-        Vector3 GpsRotX;
+        //Vector3 GpsRotX;
         float scale = 0.8f;
         Vector3 target = new Vector3(740, 195, -700);
 

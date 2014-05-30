@@ -15,10 +15,18 @@ using LTreesLibrary.Pipeline;
 
 namespace ParagliderSim
 {
+    public enum gameState
+    {
+        Playing,
+        Ended,
+    }
+
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         bool isDebug = true;
         bool orEnabled = true;
+
+        public gameState currentGameState = gameState.Playing;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -76,6 +84,8 @@ namespace ParagliderSim
         Matrix viewMatrix;
         Matrix projectionMatrix, originalProjectionMatrix;
         MouseState originalMouseState;
+
+        //target
 
 
         //Oculus Rift

@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Target.cs" />
     <Compile Include="Gps.cs" />
     <Compile Include="ParaGliderWing.cs" />
     <Compile Include="Player.cs" />
