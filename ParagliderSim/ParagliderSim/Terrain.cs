@@ -488,6 +488,8 @@ namespace ParagliderSim
             device.BlendState = BlendState.AlphaBlend;
             foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
             {
+                device.BlendState = BlendState.Opaque;
+                device.DepthStencilState = DepthStencilState.Default;
                 {
                     pass.Apply();
                     device.SetVertexBuffer(treeVertexBuffer);
