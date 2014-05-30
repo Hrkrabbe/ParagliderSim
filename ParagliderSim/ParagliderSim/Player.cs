@@ -279,6 +279,9 @@ namespace ParagliderSim
             float dragX = 3f / 8f;
 
             KeyboardState keyState = Keyboard.GetState();
+            GamePadState padState = GamePad.GetState(PlayerIndex.One);
+
+            //Keyboard
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
             {
                 leftArmRotX = -maxArmRot;
@@ -290,6 +293,24 @@ namespace ParagliderSim
                 rightAcceleration = 0;
             }
             if (keyState.IsKeyDown(Keys.R))
+            {
+                OculusClient.ResetSensorOrientation(0);
+            }
+
+            //gamepad
+            if (padState.IsConnected && padState.Triggers.Left != 0)
+            {
+                leftArmRotX = -maxArmRot * padState.Triggers.Left;
+                leftAcceleration -= leftAcceleration * padState.Triggers.Left;
+            }
+
+            if (padState.IsConnected && padState.Triggers.Right != 0)
+            {
+                rightArmRotX = -maxArmRot * padState.Triggers.Right;
+                rightAcceleration -= rightAcceleration * padState.Triggers.Right;
+            }
+
+            if (padState.IsConnected && padState.Buttons.A == ButtonState.Pressed)
             {
                 OculusClient.ResetSensorOrientation(0);
             }
