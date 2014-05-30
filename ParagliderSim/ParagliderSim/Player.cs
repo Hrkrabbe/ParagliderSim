@@ -268,18 +268,24 @@ namespace ParagliderSim
 
         private void processInput(float amount)
         {
+            KeyboardState keyState = Keyboard.GetState();
+            GamePadState padState = GamePad.GetState(PlayerIndex.One);
+
             //arms
             leftArmRotX = 0f;
             rightArmRotX = 0f;
 
+            if (padState.IsConnected && padState.ThumbSticks.Left != Vector2.Zero && padState.ThumbSticks.Left.Y > 0)
+            {
+                updownRot = padState.ThumbSticks.Left.Y * 0.153f * -1f;
+            }
 
             moveSpeed = currentWing.Speed;
-            float leftAcceleration = 0.25f;
-            float rightAcceleration = 0.25f;
+            float leftAcceleration =((float)Math.Sin(updownRot) * -9.8f) +  0.25f;
+            float rightAcceleration = ((float)Math.Sin(updownRot) * -9.8f) + 0.25f;
             float dragX = 3f / 8f;
 
-            KeyboardState keyState = Keyboard.GetState();
-            GamePadState padState = GamePad.GetState(PlayerIndex.One);
+
 
             //Keyboard
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
@@ -309,6 +315,8 @@ namespace ParagliderSim
                 rightArmRotX = -maxArmRot * padState.Triggers.Right;
                 rightAcceleration -= rightAcceleration * padState.Triggers.Right;
             }
+
+           
 
             if (padState.IsConnected && padState.Buttons.A == ButtonState.Pressed)
             {
