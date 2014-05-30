@@ -314,13 +314,13 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Images\updraftmaptest.bmp">
-      <Name>updraftmaptest</Name>
+    <Compile Include="Textures\seamless_dirt.jpg">
+      <Name>seamless_dirt</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Textures\seamless_dirt.jpg">
-      <Name>seamless_dirt</Name>
+    <Compile Include="Images\updraftmaptest.png">
+      <Name>updraftmaptest</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
