@@ -42,6 +42,7 @@ namespace ParagliderSim
         Texture2D snowTexture;
         Texture2D treeMap;
         Texture2D treeTexture;
+        Texture2D dirtTexture;
         //Trees
 
         String profileAssetFormat = "Trees/{0}";
@@ -79,7 +80,7 @@ namespace ParagliderSim
         VertexBuffer grassVertexBuffer;
         VertexDeclaration grassVertexDeclaration;
 
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap)
+        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap, Texture2D dirtTexture)
 
 
         {
@@ -94,12 +95,14 @@ namespace ParagliderSim
             this.fogStart = fogStart;
             this.fogEnd = fogEnd;
             this.treeTexture = treeTexture;
+            this.dirtTexture = dirtTexture;
             LoadHeightData(heightmap);
+            LoadUpdraftData(updraftMap);
             SetUpVertices();
             SetUpIndices();
             CalculateNormals();
             CopyToBuffers();
-            LoadUpdraftData(updraftMap);
+            
             wind = new WindStrengthSin();
             animator = new TreeWindAnimator(wind);
             LoadTreeGenerators(Content);
@@ -144,15 +147,22 @@ namespace ParagliderSim
                     vertices[x + y * terrainWidth].TexWeights.Z = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 30) / 12.0f, 0, 1);
                     vertices[x + y * terrainWidth].TexWeights.W = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 60) / 24.0f, 0, 1);
 
+                    vertices[x + y * terrainWidth].TexWeights2.X = MathHelper.Clamp(Math.Abs(updraftData[x, y]) / 8.0f, 0, 4);
+                    //vertices[x + y * terrainWidth].TexWeights2.X = 0;
+
                     float total = vertices[x + y * terrainWidth].TexWeights.X;
                     total += vertices[x + y * terrainWidth].TexWeights.Y;
                     total += vertices[x + y * terrainWidth].TexWeights.Z;
                     total += vertices[x + y * terrainWidth].TexWeights.W;
 
+                    total += vertices[x + y * terrainWidth].TexWeights2.X;
+
                     vertices[x + y * terrainWidth].TexWeights.X /= total;
                     vertices[x + y * terrainWidth].TexWeights.Y /= total;
                     vertices[x + y * terrainWidth].TexWeights.Z /= total;
                     vertices[x + y * terrainWidth].TexWeights.W /= total;
+
+                    vertices[x + y * terrainWidth].TexWeights2.X /= total;
                 }
             }
         }
@@ -269,7 +279,7 @@ namespace ParagliderSim
             return planes;
         }
 
-        //Test method for drawing current plane
+        //Testmetode for å sjekke hvilket triangel kollisjon sjekkes med
         public VertexPositionColor[] getCollisionVertices(Vector3 position)
         {
             VertexMultitextured botLeft, upLeft, botRight, upRight;
@@ -574,6 +584,7 @@ namespace ParagliderSim
             effect.Parameters["xTexture1"].SetValue(grassTexture);
             effect.Parameters["xTexture2"].SetValue(rockTexture);
             effect.Parameters["xTexture3"].SetValue(snowTexture);
+            effect.Parameters["xTexture4"].SetValue(dirtTexture);
 
             //Matrix worldMatrix = Matrix.CreateTranslation((-terrainWidth*terrainScale) / 2.0f, -terrainBot * terrainScale, (terrainHeight*terrainScale) / 2.0f);
             Matrix worldMatrix = Matrix.Identity * Matrix.CreateTranslation(0, 0, 0);

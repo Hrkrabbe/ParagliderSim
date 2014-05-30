@@ -58,8 +58,9 @@ sampler TextureSampler0 = sampler_state { texture = <xTexture0> ; magfilter = LI
 sampler TextureSampler1 = sampler_state { texture = <xTexture1> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = wrap; AddressV = wrap;};Texture xTexture2;
 
 sampler TextureSampler2 = sampler_state { texture = <xTexture2> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};Texture xTexture3;
+sampler TextureSampler3 = sampler_state { texture = <xTexture3> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};Texture xTexture4;
 
-sampler TextureSampler3 = sampler_state { texture = <xTexture3> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};
+sampler TextureSampler4 = sampler_state { texture = <xTexture4> ; magfilter = LINEAR; minfilter = LINEAR; mipfilter=LINEAR; AddressU = mirror; AddressV = mirror;};
 
 Texture xReflectionMap;
 
@@ -257,6 +258,7 @@ struct MTVertexToPixel
 	float4 clipDistances     : TEXCOORD5;
 	float3 fragmentPos         : COLOR1;
 	float Fog				: TEXCOORD6;
+	float4 TextureWeights2    : TEXCOORD7;
 };
 
 struct MTPixelToFrame
@@ -264,7 +266,7 @@ struct MTPixelToFrame
     float4 Color : COLOR0;
 };
 
-MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMAL, float2 inTexCoords: TEXCOORD0, float4 inTexWeights: TEXCOORD1)
+MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMAL, float2 inTexCoords: TEXCOORD0, float4 inTexWeights: TEXCOORD1, float4 inTexWeights2: TEXCOORD2)
 {    
     MTVertexToPixel Output = (MTVertexToPixel)0;
     float4x4 preViewProjection = mul (xView, xProjection);
@@ -278,6 +280,7 @@ MTVertexToPixel MultiTexturedVS( float4 inPos : POSITION, float3 inNormal: NORMA
     Output.LightDirection.xyz = -xLightDirection;
     Output.LightDirection.w = 1;    
     Output.TextureWeights = inTexWeights;
+	Output.TextureWeights2 = inTexWeights2;
 
 	Output.fragmentPos = mul(inPos.xyz, xWorld); 
 	Output.Fog = saturate((length(xCamPos-inPos.xyz) -FogStart)/(FogEnd-FogStart));
@@ -310,6 +313,7 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      farColor += tex2D(TextureSampler1, PSIn.TextureCoords)*PSIn.TextureWeights.y;
      farColor += tex2D(TextureSampler2, PSIn.TextureCoords)*PSIn.TextureWeights.z;
      farColor += tex2D(TextureSampler3, PSIn.TextureCoords)*PSIn.TextureWeights.w;
+	 farColor += tex2D(TextureSampler4, PSIn.TextureCoords)*PSIn.TextureWeights2.x;
 
      
      float4 nearColor;
@@ -318,6 +322,8 @@ MTPixelToFrame MultiTexturedPS(MTVertexToPixel PSIn)
      nearColor += tex2D(TextureSampler1, nearTextureCoords)*PSIn.TextureWeights.y;
      nearColor += tex2D(TextureSampler2, nearTextureCoords)*PSIn.TextureWeights.z;
      nearColor += tex2D(TextureSampler3, nearTextureCoords)*PSIn.TextureWeights.w;
+	 nearColor += tex2D(TextureSampler4, nearTextureCoords)*PSIn.TextureWeights2.x;
+
  
 	//float d = distance(xCamPos, PSIn.fragmentPos);
 	 //float l = saturate((d-100)/(500));

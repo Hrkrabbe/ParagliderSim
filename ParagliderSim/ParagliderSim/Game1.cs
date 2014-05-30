@@ -54,6 +54,7 @@ namespace ParagliderSim
         Terrain terrain;
         Texture2D treeTexture;
         Texture2D updraftMap;
+        Texture2D dirtTexture;
 
         //Water
         const float waterHeight = 95.0f;
@@ -251,6 +252,7 @@ namespace ParagliderSim
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
             treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
             updraftMap = Content.Load<Texture2D>(@"Images/updraftmaptest");
+            dirtTexture = Content.Load<Texture2D>(@"Textures/seamless_dirt");
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -262,7 +264,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap);           
+            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap, dirtTexture);           
 
 
             
@@ -710,6 +712,7 @@ namespace ParagliderSim
         public Vector3 Normal;
         public Vector4 TextureCoordinate;
         public Vector4 TexWeights;
+        public Vector4 TexWeights2;
 
         //   public static int SizeInBytes = (3 + 3 + 4 + 4) * sizeof(float);  
 
@@ -718,7 +721,8 @@ namespace ParagliderSim
          new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
          new VertexElement(sizeof(float) * 3, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0),
          new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 0),
-         new VertexElement(sizeof(float) * 10, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
+         new VertexElement(sizeof(float) * 10, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1),
+         new VertexElement(sizeof(float) * 14, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2)
          );
 
     }
