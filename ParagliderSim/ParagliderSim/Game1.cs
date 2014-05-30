@@ -63,6 +63,7 @@ namespace ParagliderSim
         Texture2D treeTexture;
         Texture2D updraftMap;
         Texture2D dirtTexture;
+        Texture2D fieldTextureMap;
 
         //Water
         const float waterHeight = 95.0f;
@@ -270,6 +271,8 @@ namespace ParagliderSim
             treeTexture = Content.Load<Texture2D>(@"Textures/treeBillboard");
             updraftMap = Content.Load<Texture2D>(@"Images/updraftmaptest");
             dirtTexture = Content.Load<Texture2D>(@"Textures/seamless_dirt");
+            fieldTextureMap = Content.Load<Texture2D>(@"Images/fieldmap");
+
 
             //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
             //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
@@ -282,7 +285,7 @@ namespace ParagliderSim
 
 
 
-            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap, dirtTexture);           
+            terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap, dirtTexture, fieldTextureMap);           
 
 
             
