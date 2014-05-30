@@ -177,6 +177,11 @@ namespace ParagliderSim
             get { return font; }
         }
 
+        public float WaterHeight
+        {
+            get { return waterHeight; }
+        }
+
         #endregion
 
         public Game1()

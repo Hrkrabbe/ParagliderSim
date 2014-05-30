@@ -70,11 +70,18 @@ namespace ParagliderSim
             CalculateWorldScreen();
             //screenWorld = GpsWorld * (Matrix.CreateScale(2000) * Matrix.CreateTranslation(0,0, 0));
 
+            //height and distance
+            float height = game.Player.Position.Y - game.WaterHeight;
+            Vector2 v = new Vector2(target.X - game.Player.Position.X, target.Z - game.Player.Position.Z);
+            float distance = v.Length();
+
+
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.White);
             game.SpriteBatch.Begin();
             game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin,0.6f, SpriteEffects.None,0.0f);
-            game.SpriteBatch.DrawString(font, "TEST", new Vector2(renderTarget.Width /4f, renderTarget.Height / 1.5f), Color.Black);
+            game.SpriteBatch.DrawString(font, distance.ToString("0"), new Vector2(renderTarget.Width / 4f, renderTarget.Height / 2.4f), Color.Black);
+            game.SpriteBatch.DrawString(font, height.ToString("0"), new Vector2(renderTarget.Width /4f, renderTarget.Height / 1.5f), Color.Black);
             game.SpriteBatch.End();
 
             screen = (Texture2D)renderTarget;
