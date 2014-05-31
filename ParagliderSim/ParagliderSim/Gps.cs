@@ -77,7 +77,10 @@ namespace ParagliderSim
             float height = game.Player.Position.Y - game.WaterHeight;
             Vector2 v = new Vector2(target.X - game.Player.Position.X, target.Z - game.Player.Position.Z);
             float distance = v.Length();
+
             float score = 100f - distance;
+            if (score < 0f)
+                score = 0f;
 
 
             GraphicsDevice.SetRenderTarget(renderTarget);

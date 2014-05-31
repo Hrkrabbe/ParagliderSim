@@ -573,7 +573,7 @@ namespace ParagliderSim
             y = (int)Math.Floor(-position.Z / terrainScale);
 
             if ((x > 0) && (x < terrainWidth) && (y > 0) && (y < terrainHeight))
-                return updraftData[x, y] * 0.005f;
+                return updraftData[x, y] * 0.0025f;
             else
                 return 0f;
         }

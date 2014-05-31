@@ -22,15 +22,16 @@ namespace ParagliderSim
         Model playerModel;
         const float rotationSpeed = 0.1f;
         float moveSpeed = 50.0f;
-        float lefrightRot = MathHelper.PiOver2;
+        //float lefrightRot = MathHelper.PiOver2;
+        float lefrightRot = MathHelper.Pi + MathHelper.PiOver4;
         //float updownRot = -MathHelper.Pi / 10.0f;
         float updownRot = 0;
         float rotZ = 0;
         Matrix playerBodyRotation;
         Matrix playerWorld;
         //Vector3 playerPosition = new Vector3(740, 250, -700);
-        //Vector3 playerPosition = new Vector3(444, 440, -1821); //fin startlokasjon
-        Vector3 playerPosition = new Vector3(2550, 200, -1818);
+        Vector3 playerPosition = new Vector3(444, 440, -1821); //fin startlokasjon
+        //Vector3 playerPosition = new Vector3(2550, 200, -1818);
 
         BoundingSphere playerSphere, originalPlayerSphere;
 
@@ -287,7 +288,7 @@ namespace ParagliderSim
 
 
             //downforce
-            float downforce = 0.05f;
+            float downforce = ((float)Math.Sin(updownRot) * (-1f)) + 0.05f;
             moveSpeed = currentWing.Speed;
 
             //acceleration
@@ -348,7 +349,7 @@ namespace ParagliderSim
 
         private void AddToPlayerPosition(Vector3 delta)
         {
-            playerBodyRotation = Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot) ;
+            playerBodyRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(lefrightRot) ;
             rotatedVector = Vector3.Transform(delta, playerBodyRotation);
             playerPosition += rotatedVector * moveSpeed;
             isColliding = checkCollision();
@@ -450,7 +451,7 @@ namespace ParagliderSim
                     if (collisionDistance.HasValue && !game.IsDebug)
                     {
                         float flatness = Vector3.Dot(planeNormal, new Vector3(0, 1, 0));
-                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
+                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(45));
 
                         if (flatness > minFlatness)
                         {

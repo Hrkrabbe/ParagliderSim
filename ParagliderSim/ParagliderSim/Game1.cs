@@ -23,7 +23,7 @@ namespace ParagliderSim
 
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        bool isDebug = true;
+        bool isDebug = false;
         bool orEnabled = true;
 
         public gameState currentGameState = gameState.Playing;
