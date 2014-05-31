@@ -17,7 +17,7 @@ namespace ParagliderSim
     /// </summary>
     public class Gps : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        SpriteFont font;
+        SpriteFont font, font2;
         RenderTarget2D renderTarget;
         Texture2D screen;
         Texture2D arrow;
@@ -47,10 +47,11 @@ namespace ParagliderSim
 
         protected override void LoadContent()
         {
-            renderTarget = new RenderTarget2D(GraphicsDevice, 32, 32, false, SurfaceFormat.Bgr565, DepthFormat.None);
+            renderTarget = new RenderTarget2D(GraphicsDevice, 64, 64, false, SurfaceFormat.Bgr565, DepthFormat.None);
             arrow = game.Content.Load<Texture2D>(@"Images/arrow");
             model = game.Content.Load<Model>(@"Models/phone");
             font = game.Content.Load<SpriteFont>(@"Fonts/SpriteFont2");
+            font2 = game.Content.Load<SpriteFont>(@"Fonts/SpriteFont3");
 
             //origin = new Vector2(0, 0);
             origin.X = arrow.Width / 2;
@@ -76,15 +77,30 @@ namespace ParagliderSim
             float height = game.Player.Position.Y - game.WaterHeight;
             Vector2 v = new Vector2(target.X - game.Player.Position.X, target.Z - game.Player.Position.Z);
             float distance = v.Length();
+            float score = 100f - distance;
 
 
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.White);
-            game.SpriteBatch.Begin();
-            game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin,0.6f, SpriteEffects.None,0.0f);
-            game.SpriteBatch.DrawString(font, distance.ToString("0"), new Vector2(renderTarget.Width / 4f, renderTarget.Height / 2.4f), Color.Black);
-            game.SpriteBatch.DrawString(font, height.ToString("0"), new Vector2(renderTarget.Width /4f, renderTarget.Height / 1.5f), Color.Black);
-            game.SpriteBatch.End();
+
+            if (game.currentGameState == gameState.Playing)
+            {
+                game.SpriteBatch.Begin();
+                game.SpriteBatch.Draw(arrow, arrowPos, null, Color.White, rotation, origin, 1.2f, SpriteEffects.None, 0.0f);
+                game.SpriteBatch.DrawString(font, distance.ToString("0"), new Vector2(renderTarget.Width / 4f, renderTarget.Height / 2.4f), Color.Black);
+                game.SpriteBatch.DrawString(font, height.ToString("0"), new Vector2(renderTarget.Width / 4f, renderTarget.Height / 1.5f), Color.Black);
+                game.SpriteBatch.End();
+            }
+
+            if (game.currentGameState == gameState.Ended)
+            {
+                game.SpriteBatch.Begin();
+                game.SpriteBatch.DrawString(font2,"GAME", new Vector2(renderTarget.Width / 6f, 0), Color.Black);
+                game.SpriteBatch.DrawString(font2, "OVER", new Vector2(renderTarget.Width / 6f, 15), Color.Black);
+                game.SpriteBatch.DrawString(font2, "SCORE:", new Vector2(renderTarget.Width / 12f, 30), Color.Black);
+                game.SpriteBatch.DrawString(font2, score.ToString("0"), new Vector2(renderTarget.Width / 4f, 44f), Color.Black);
+                game.SpriteBatch.End();
+            }
 
             screen = (Texture2D)renderTarget;
             GraphicsDevice.SetRenderTarget(null);

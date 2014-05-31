@@ -256,10 +256,17 @@ namespace ParagliderSim
             botRight = vertices[(x + 1) + y * terrainWidth];
             upRight = vertices[(x + 1) + (y + 1) * terrainWidth];
 
-            if ((position.X / terrainScale) - x > (-position.Z / terrainScale) - y)
+            /*
+            if ((position.X / terrainScale) - x > 1- ((-position.Z / terrainScale) - y))
                 return new Plane(botLeft.Position, upRight.Position, botRight.Position);
             else
-                return new Plane(botLeft.Position, upLeft.Position, botRight.Position);
+                return new Plane(botLeft.Position, upLeft.Position, botRight.Position); */
+
+            if ((position.X / terrainScale) - x > 1 - ((-position.Z / terrainScale) - y))
+                return new Plane(upLeft.Position, upRight.Position, botRight.Position);
+            else
+                return new Plane(upLeft.Position, botRight.Position, botLeft.Position);
+
         }
 
         public List<Plane> getPlanes(Vector3 position)

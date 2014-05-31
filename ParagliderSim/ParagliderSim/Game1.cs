@@ -235,7 +235,7 @@ namespace ParagliderSim
             Components.Add(player);
             gps = new Gps(this);
             Components.Add(gps);
-            target = new Target(this, new Vector3(740, 250, -700));
+            target = new Target(this, new Vector3(2550, 151, -1818));
             Components.Add(target);
 
             if (orEnabled)
@@ -659,7 +659,7 @@ namespace ParagliderSim
             Matrix[] modelTransforms = new Matrix[skyDome.Bones.Count];
             skyDome.CopyAbsoluteBoneTransformsTo(modelTransforms);
 
-            Matrix wMatrix = Matrix.CreateScale(1) * Matrix.CreateRotationY(MathHelper.PiOver4 - (MathHelper.PiOver4 /7.5f)) * Matrix.CreateTranslation(player.Position) * Matrix.CreateTranslation(0, -500.0f, 0);
+            Matrix wMatrix = Matrix.CreateScale(1) * Matrix.CreateRotationY(MathHelper.PiOver4 - (MathHelper.PiOver4 /7.5f)) * Matrix.CreateTranslation(player.Position) * Matrix.CreateTranslation(0, -700.0f, 0);
             foreach (ModelMesh mesh in skyDome.Meshes)
             {
                 foreach (BasicEffect currentEffect in mesh.Effects)

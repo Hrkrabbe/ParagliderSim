@@ -28,7 +28,10 @@ namespace ParagliderSim
         float rotZ = 0;
         Matrix playerBodyRotation;
         Matrix playerWorld;
-        Vector3 playerPosition = new Vector3(740, 250, -700);
+        //Vector3 playerPosition = new Vector3(740, 250, -700);
+        //Vector3 playerPosition = new Vector3(444, 440, -1821); //fin startlokasjon
+        Vector3 playerPosition = new Vector3(2550, 200, -1818);
+
         BoundingSphere playerSphere, originalPlayerSphere;
 
         //Camera and movement
@@ -227,11 +230,13 @@ namespace ParagliderSim
 
         private void initPlayerSphere()
         {
-            foreach (ModelMesh mesh in playerModel.Meshes)
-            {
-                originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
-            }
+            //foreach (ModelMesh mesh in playerModel.Meshes)
+            //{
+            //    originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
+            //}
             //originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
+
+            originalPlayerSphere = new BoundingSphere(new Vector3(0, -70f, 0), 150f);
         }
 
         #region movement
@@ -334,7 +339,10 @@ namespace ParagliderSim
             rotZ = currentWing.getRotationZ();
 
             Vector3 upDraft = new Vector3(0, 1, 0) * game.Terrain.getUpdraft(playerPosition);
+
+            if(game.currentGameState == gameState.Playing)
             AddToPlayerPosition(currentWing.getMovementVector() + (upDraft*amount));
+
             UpdateViewMatrix();
         }
 
@@ -438,6 +446,18 @@ namespace ParagliderSim
                     float collisionDepth = collisionDistance.HasValue ? playerSphere.Radius - collisionDistance.Value : 0.0f;
 
                     playerPosition += planeNormal * collisionDepth;
+
+                    if (collisionDistance.HasValue && !game.IsDebug)
+                    {
+                        float flatness = Vector3.Dot(planeNormal, new Vector3(0, 1, 0));
+                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(15));
+
+                        if (flatness > minFlatness)
+                        {
+                            game.currentGameState = gameState.Ended;
+                        }
+                    }
+
                     return true;
                 }
                 else
