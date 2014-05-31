@@ -82,8 +82,6 @@ namespace ParagliderSim
         VertexDeclaration grassVertexDeclaration;
 
         public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap, Texture2D dirtTexture, Texture2D fieldTextureMap)
-
-
         {
             this.game = game;
             this.device = device;
@@ -149,7 +147,7 @@ namespace ParagliderSim
                     vertices[x + y * terrainWidth].TexWeights.Z = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 30) / 12.0f, 0, 1);
                     vertices[x + y * terrainWidth].TexWeights.W = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 60) / 24.0f, 0, 1);
 
-                    vertices[x + y * terrainWidth].TexWeights2.X = MathHelper.Clamp(Math.Abs(fieldTextureData[x, y]) / 8.0f, 0, 4);
+                    vertices[x + y * terrainWidth].TexWeights2.X = MathHelper.Clamp(Math.Abs(fieldTextureData[x, y]) / 2.0f, 0, 40);
                     //vertices[x + y * terrainWidth].TexWeights2.X = 0;
 
                     float total = vertices[x + y * terrainWidth].TexWeights.X;
@@ -412,9 +410,10 @@ namespace ParagliderSim
 
                             for (int currDetail = 0; currDetail < treeDensity; currDetail++)
                             {
-                                float rand1 = (float)random.Next(1000) / 1000.0f;
-                                float rand2 = (float)random.Next(1000) / 1000.0f;
-                                Vector3 treePos = new Vector3(((float)x - rand1)*terrainScale, 0, (-(float)y - rand2)*terrainScale);
+                                float rand1 = (float)random.Next(1000) / 1500.0f;
+                                float rand2 = (float)random.Next(1000) / 1500.0f;
+
+                                Vector3 treePos = new Vector3(((float)x - rand1) * terrainScale, 0, (-(float)y - rand2) * terrainScale);
                                 treePos.Y = heightData[x, y]*terrainScale;
                                 treeList.Add(treePos);
                             }
@@ -510,67 +509,6 @@ namespace ParagliderSim
             }
             device.BlendState = BlendState.Opaque;
         }
-
-        #endregion
-
-        #region Grass
-
-        private List<Vector3> GenerateGrassPositions(Texture2D grassMap, VertexMultitextured[] terrainVertices)
-        {
-            Color[] grassMapColors = new Color[grassMap.Width * grassMap.Height];
-            grassMap.GetData(grassMapColors);
-
-            int[,] noiseData = new int[grassMap.Width, grassMap.Height];
-            for (int x = 0; x < grassMap.Width; x++)
-                for (int y = 0; y < grassMap.Height; y++)
-                    noiseData[x, y] = grassMapColors[y + x * grassMap.Height].R;
-
-
-            //List<Vector3> treeList = new List<Vector3>(); 
-            Random random = new Random();
-
-            for (int x = 0; x < terrainWidth; x++)
-            {
-                for (int y = 0; y < terrainHeight; y++)
-                {
-                    float terrHeight = heightData[x, y];
-                    if ((terrHeight > 7) && (terrHeight < 250))
-                    {
-                        float flatness = Vector3.Dot(terrainVertices[x + y * (int)terrainWidth].Normal, new Vector3(0, 1, 0));
-                        float minFlatness = (float)Math.Cos(MathHelper.ToRadians(10));
-                        if (flatness > minFlatness)
-                        {
-                            float relx = (float)x / (float)terrainWidth;
-                            float rely = (float)y / (float)terrainHeight;
-
-                            float noiseValueAtCurrentPosition = noiseData[(int)(relx * treeMap.Width), (int)(rely * grassMap.Height)];
-                            float grassDensity;
-                            if (noiseValueAtCurrentPosition > 200)
-                                grassDensity = 8;
-                            else if (noiseValueAtCurrentPosition > 150)
-                                grassDensity = 4;
-                            else if (noiseValueAtCurrentPosition > 100)
-                                grassDensity = 1;
-                            else
-                                grassDensity = 0;
-
-                            for (int currDetail = 0; currDetail < grassDensity; currDetail++)
-                            {
-                                float rand1 = (float)random.Next(1000) / 1000.0f;
-                                float rand2 = (float)random.Next(1000) / 1000.0f;
-                                Vector3 grassPos = new Vector3(((float)x - rand1) * terrainScale, 0, (-(float)y - rand2) * terrainScale);
-                                grassPos.Y = heightData[x, y] * terrainScale;
-                                grassList.Add(grassPos);
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            return treeList;
-        }
-
 
         #endregion
 

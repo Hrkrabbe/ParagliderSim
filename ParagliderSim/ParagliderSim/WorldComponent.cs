@@ -38,7 +38,7 @@ namespace ParagliderSim
             {
                 boundingSphere = BoundingSphere.CreateMerged(boundingSphere, mesh.BoundingSphere);
             }
-            boundingSphere = boundingSphere.Transform(Matrix.CreateScale(100.0f) * world);
+            boundingSphere = boundingSphere.Transform(world);
         }
 
         public BoundingSphere getBoundingSphere()
