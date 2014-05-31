@@ -659,7 +659,7 @@ namespace ParagliderSim
             Matrix[] modelTransforms = new Matrix[skyDome.Bones.Count];
             skyDome.CopyAbsoluteBoneTransformsTo(modelTransforms);
 
-            Matrix wMatrix = Matrix.CreateTranslation(0, -100.0f, 0) * Matrix.CreateScale(1) * Matrix.CreateTranslation(player.Position);
+            Matrix wMatrix = Matrix.CreateScale(1) * Matrix.CreateRotationY(MathHelper.PiOver4 - (MathHelper.PiOver4 /7.5f)) * Matrix.CreateTranslation(player.Position) * Matrix.CreateTranslation(0, -500.0f, 0);
             foreach (ModelMesh mesh in skyDome.Meshes)
             {
                 foreach (BasicEffect currentEffect in mesh.Effects)
