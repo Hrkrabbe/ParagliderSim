@@ -82,8 +82,6 @@ namespace ParagliderSim
         VertexDeclaration grassVertexDeclaration;
 
         public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap, Texture2D dirtTexture, Texture2D fieldTextureMap)
-
-
         {
             this.game = game;
             this.device = device;
@@ -149,7 +147,7 @@ namespace ParagliderSim
                     vertices[x + y * terrainWidth].TexWeights.Z = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 30) / 12.0f, 0, 1);
                     vertices[x + y * terrainWidth].TexWeights.W = MathHelper.Clamp(1.0f - Math.Abs(heightData[x, y] - 60) / 24.0f, 0, 1);
 
-                    vertices[x + y * terrainWidth].TexWeights2.X = MathHelper.Clamp(Math.Abs(fieldTextureData[x, y]) / 8.0f, 0, 4);
+                    vertices[x + y * terrainWidth].TexWeights2.X = MathHelper.Clamp(Math.Abs(fieldTextureData[x, y]) / 2.0f, 0, 40);
                     //vertices[x + y * terrainWidth].TexWeights2.X = 0;
 
                     float total = vertices[x + y * terrainWidth].TexWeights.X;

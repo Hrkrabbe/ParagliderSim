@@ -45,6 +45,7 @@ namespace ParagliderSim
         //Test
         Model unitMeter;
         Model house;
+        Model barn;
         //Texture2D cloudMap;
         Model skyDome;
 
@@ -263,6 +264,7 @@ namespace ParagliderSim
             snowTexture = Content.Load<Texture2D>(@"Textures/snow");
             unitMeter = Content.Load<Model>(@"Models/unitMeter");
             house = Content.Load<Model>(@"Models/house2");
+            barn = Content.Load<Model>(@"Models/barn");
             waterBumpMap = Content.Load<Texture2D>("waterbump");
             skyDome = Content.Load<Model>(@"Models/SkyDome2");
             treeMap = Content.Load<Texture2D>(@"Images/treemap");
@@ -700,13 +702,14 @@ namespace ParagliderSim
             worldComponents = new List<WorldComponent>();
 
             //Add all static components of the world map here:
-            worldComponents.Add(new WorldComponent(unitMeter, 0.01f, 0, new Vector3(736, 195.2f, -700)));
-            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(740, 195, -700)));
-            worldComponents.Add(new WorldComponent(unitMeter, 0.02f, 0, new Vector3(726, 200.2f, -700)));
-            worldComponents.Add(new WorldComponent(unitMeter, 0.03f, 0, new Vector3(716, 210.2f, -700)));
-            worldComponents.Add(new WorldComponent(unitMeter, 0.05f, 0, new Vector3(706, 220.2f, -700)));
-            worldComponents.Add(new WorldComponent(unitMeter, 0.1f, 0, new Vector3(696, 240.2f, -700)));
-            worldComponents.Add(new WorldComponent(unitMeter, 0.5f, 0, new Vector3(840, 197.2f, -584)));
+            //worldComponents.Add(new WorldComponent(unitMeter, 0.01f, 0, new Vector3(712, 124.2f, -1177)));
+            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(761, 122, -1139)));
+            worldComponents.Add(new WorldComponent(barn, 2.01f, 0, new Vector3(717, 124, -1177)));
+            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(780, 122.0f, -1134)));
+            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(2319, 160.0f, -1225)));
+            worldComponents.Add(new WorldComponent(house, 0.01f, 0, new Vector3(2916, 285.0f, -1206)));
+            worldComponents.Add(new WorldComponent(barn, 2.01f, 0, new Vector3(2915, 287.2f, -1178)));
+            worldComponents.Add(new WorldComponent(barn, 2.01f, 0, new Vector3(2319, 162.2f, -1240)));
         }
 
         public void drawGameWorld()

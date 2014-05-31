@@ -21,7 +21,7 @@ namespace ParagliderSim
         //Player
         Model playerModel;
         const float rotationSpeed = 0.1f;
-        float moveSpeed = 50.0f;
+        float moveSpeed = 200.0f;
         float lefrightRot = MathHelper.PiOver2;
         //float updownRot = -MathHelper.Pi / 10.0f;
         float updownRot = 0;
