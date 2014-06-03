@@ -15,23 +15,19 @@ namespace ParagliderSim
 {
     public class Player : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        Game1 game;
+        ParagliderSimulator game;
         ParaGliderWing currentWing = new ParaGliderWing("test", 5.0f, 5.0f);
 
         //Player
         Model playerModel;
         const float rotationSpeed = 0.1f;
         float moveSpeed = 50.0f;
-        //float lefrightRot = MathHelper.PiOver2;
-        float lefrightRot = MathHelper.Pi + MathHelper.PiOver4;
-        //float updownRot = -MathHelper.Pi / 10.0f;
+        float lefrightRot = 0;
         float updownRot = 0;
         float rotZ = 0;
         Matrix playerBodyRotation;
         Matrix playerWorld;
-        //Vector3 playerPosition = new Vector3(740, 250, -700);
-        Vector3 playerPosition = new Vector3(444, 440, -1821); //fin startlokasjon
-        //Vector3 playerPosition = new Vector3(2550, 200, -1818);
+        Vector3 playerPosition = new Vector3(2392, 463, -905); //fin startlokasjon
 
         BoundingSphere playerSphere, originalPlayerSphere;
 
@@ -46,9 +42,6 @@ namespace ParagliderSim
         Vector3 cameraRotatedUpVector;
 
         //Physics
-        //float maxVel = 5f;
-        //float velocity = 1;
-        //float acceleration;
         Vector2 wind = new Vector2(0.1f,0);
 
         //Collision
@@ -66,7 +59,6 @@ namespace ParagliderSim
         float rightArmRotX;
 
         #region properties
-
         public Vector3 Position
         {
             get { return playerPosition; }
@@ -106,10 +98,9 @@ namespace ParagliderSim
         {
             get { return playerBodyRotation; }
         }
-
         #endregion
 
-        public Player(Game1 game)
+        public Player(ParagliderSimulator game)
             : base(game)
         {
             this.game = game;
@@ -119,8 +110,6 @@ namespace ParagliderSim
         {
             base.Initialize();
         }
-
-
 
         protected override void LoadContent()
         {
@@ -167,7 +156,6 @@ namespace ParagliderSim
                 }
                 mesh.Draw();
             }
-
             drawArms();
         }
 
@@ -175,7 +163,7 @@ namespace ParagliderSim
         {
             //Left arm
             Matrix[] transforms = new Matrix[leftArmModel.Bones.Count];
-           leftArmModel.CopyAbsoluteBoneTransformsTo(transforms);
+            leftArmModel.CopyAbsoluteBoneTransformsTo(transforms);
 
             foreach (ModelMesh mesh in leftArmModel.Meshes)
             {
@@ -204,7 +192,6 @@ namespace ParagliderSim
                 }
                 mesh.Draw();
             }
- 
         }
 
         private void CalculateWorldLeftArm()
@@ -215,7 +202,10 @@ namespace ParagliderSim
             Vector3 translation = Vector3.Transform(game.Player.Position + leftArmPos,
                                            positionRotationMatrix);
 
-            leftArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationX(leftArmRotX) * Matrix.CreateRotationY(lefrightRot) * Matrix.CreateTranslation(translation);
+            leftArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) *
+                           Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * 
+                           Matrix.CreateRotationX(leftArmRotX) * Matrix.CreateRotationY(lefrightRot) * 
+                           Matrix.CreateTranslation(translation);
         }
 
         private void CalculateWorldRightArm()
@@ -226,17 +216,14 @@ namespace ParagliderSim
             Vector3 translation = Vector3.Transform(game.Player.Position + rightArmPos,
                                            positionRotationMatrix);
 
-            rightArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationX(rightArmRotX) * Matrix.CreateRotationY(lefrightRot) * Matrix.CreateTranslation(translation);
+            rightArmWorld = Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * 
+                            Matrix.CreateRotationZ(rotZ) * Matrix.CreateRotationX(updownRot) * 
+                            Matrix.CreateRotationX(rightArmRotX) * Matrix.CreateRotationY(lefrightRot) * 
+                            Matrix.CreateTranslation(translation);
         }
 
         private void initPlayerSphere()
         {
-            //foreach (ModelMesh mesh in playerModel.Meshes)
-            //{
-            //    originalPlayerSphere = BoundingSphere.CreateMerged(originalPlayerSphere, mesh.BoundingSphere);
-            //}
-            //originalPlayerSphere = originalPlayerSphere.Transform(Matrix.CreateScale(100.0f));
-
             originalPlayerSphere = new BoundingSphere(new Vector3(0, -70f, 0), 150f);
         }
 
@@ -251,7 +238,6 @@ namespace ParagliderSim
                 lefrightRot -= rotationSpeed * deltaX * amount;
                 updownRot -= rotationSpeed * deltaY * amount;
                 Mouse.SetPosition(game.GraphicsDevice.Viewport.Width / 2, game.GraphicsDevice.Viewport.Height / 2);
-                //UpdateViewMatrix();
             }
 
             Vector3 moveVector = new Vector3(0, 0, 0);
@@ -286,7 +272,6 @@ namespace ParagliderSim
                 updownRot = padState.ThumbSticks.Left.Y * 0.153f * -1f;
             }
 
-
             //downforce
             float downforce = ((float)Math.Sin(updownRot) * (-1f)) + 0.05f;
             moveSpeed = currentWing.Speed;
@@ -295,8 +280,6 @@ namespace ParagliderSim
             float leftAcceleration =((float)Math.Sin(updownRot) * -9.8f) +  0.25f;
             float rightAcceleration = ((float)Math.Sin(updownRot) * -9.8f) + 0.25f;
             float dragX = 3f / 8f;
-
-
 
             //Keyboard
             if (keyState.IsKeyDown(Keys.Left) || keyState.IsKeyDown(Keys.A))
@@ -327,20 +310,17 @@ namespace ParagliderSim
                 rightAcceleration -= rightAcceleration * padState.Triggers.Right;
             }
 
-           
-
             if (padState.IsConnected && padState.Buttons.A == ButtonState.Pressed)
             {
                 OculusClient.ResetSensorOrientation(0);
             }
 
+            //Beveger glideren og henter ut rotasjon
             currentWing.move(wind, game.Terrain.getUpdraft(playerPosition), downforce, leftAcceleration, rightAcceleration, amount, dragX);
-
             lefrightRot += currentWing.getRotationY();
             rotZ = currentWing.getRotationZ();
 
             Vector3 upDraft = new Vector3(0, 1, 0) * game.Terrain.getUpdraft(playerPosition);
-
             if(game.currentGameState == gameState.Playing)
             AddToPlayerPosition(currentWing.getMovementVector() + (upDraft*amount));
 
@@ -363,15 +343,13 @@ namespace ParagliderSim
             if (game.OREnabled)
             {
                 cameraRotation = Matrix.CreateFromQuaternion(OculusClient.GetPredictedOrientation()) * playerBodyRotation;
+
                 //Neck movement
-                
                 Vector3 neck = new Vector3(0, 0.3f, 0);
                 Vector3 neck2 = Vector3.Transform(neck, playerBodyRotation);
                 cameraPosition = playerPosition - neck2;
                 neck = Vector3.Transform(neck, Matrix.CreateFromQuaternion((OculusClient.GetPredictedOrientation()) * 0.65f)* playerBodyRotation);
                 cameraPosition += neck;
-                 
-                //cameraPosition = playerPosition;
             }
             else
             {
@@ -388,9 +366,6 @@ namespace ParagliderSim
 
             game.ViewMatrix = Matrix.CreateLookAt(cameraPosition, cameraFinalTarget, cameraRotatedUpVector);
 
-
-
-
             //player
             playerWorld = Matrix.Identity * Matrix.CreateScale(0.01f) * Matrix.CreateRotationY((float)Math.PI) * playerBodyRotation * Matrix.CreateTranslation(playerPosition);
             playerSphere = originalPlayerSphere.Transform(playerWorld);
@@ -400,7 +375,6 @@ namespace ParagliderSim
         #region collision
         public bool checkCollision()
         {
-
             Vector3 d = new Vector3(0,0,-playerSphere.Radius);
             Vector3 direction = Vector3.Transform(d, playerBodyRotation);
             if (checkTerrainCollision(playerSphere.Center) || checkTerrainCollision(playerSphere.Center + direction) || checkWorldComponentCollision())
@@ -496,7 +470,6 @@ namespace ParagliderSim
         public Quaternion getRotation()
         {
             Quaternion quat = Quaternion.CreateFromRotationMatrix(
-                //Matrix.CreateRotationZ(0.0f)*
                  Matrix.CreateRotationY(lefrightRot)
                 * Matrix.CreateRotationX(updownRot));
             return quat;

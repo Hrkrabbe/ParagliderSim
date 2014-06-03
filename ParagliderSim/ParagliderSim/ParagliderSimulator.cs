@@ -21,10 +21,10 @@ namespace ParagliderSim
         Ended,
     }
 
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class ParagliderSimulator : Microsoft.Xna.Framework.Game
     {
         bool isDebug = false;
-        bool orEnabled = true;
+        bool orEnabled = true; //Ikke endre på
 
         public gameState currentGameState = gameState.Playing;
 
@@ -42,11 +42,10 @@ namespace ParagliderSim
         double  resolutionX = 1280,
                 resolutionY = 800;
         
-        //Test
+        //Modeller
         Model unitMeter;
         Model house;
         Model barn;
-        //Texture2D cloudMap;
         Model skyDome;
 
         List<WorldComponent> worldComponents;
@@ -131,7 +130,6 @@ namespace ParagliderSim
         public Matrix ProjectionMatrix
         {
             get { return projectionMatrix; }
-            //set { ProjectionMatrix = value; }
         }
 
         public OculusClient OculusClient
@@ -169,12 +167,6 @@ namespace ParagliderSim
             get { return spriteBatch; }
         }
 
-        /*
-        public ContentManager Content
-        {
-            get { return Content; }
-        } */
-
         public RenderTarget2D CurrentRenderTarget
         {
             get { return currentRenderTarget; }
@@ -202,7 +194,7 @@ namespace ParagliderSim
 
         #endregion
 
-        public Game1()
+        public ParagliderSimulator()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -275,26 +267,15 @@ namespace ParagliderSim
             dirtTexture = Content.Load<Texture2D>(@"Textures/seamless_dirt");
             fieldTextureMap = Content.Load<Texture2D>(@"Images/fieldmap");
 
-
-            //skyDome.Meshes[0].MeshParts[0].Effect = effect.Clone();
-            //cloudMap = Content.Load<Texture2D>(@"Textures/cloudMap");
-
             PresentationParameters pp = device.PresentationParameters;
-         //   refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight);
-            //refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, false, pp.BackBufferFormat, pp.DepthStencilFormat);
             refractionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
             reflectionRenderTarget = new RenderTarget2D(device, pp.BackBufferWidth, pp.BackBufferHeight, true, SurfaceFormat.Bgr565, DepthFormat.Depth24Stencil8);
 
-
-
             terrain = new Terrain(this, device,terrainScale, fogStart, fogEnd, heightmap, grassTexture, sandTexture, rockTexture, snowTexture, treeMap, grassMap, treeTexture, Content, updraftMap, dirtTexture, fieldTextureMap);           
 
-
-            
             SetUpWaterVertices();
             waterVertexDeclaration = new VertexDeclaration(VertexPositionTexture.VertexDeclaration.GetVertexElements());
             initGameWorld();
-            //initPlayerSphere();
         }
 
         protected override void UnloadContent()
@@ -311,11 +292,8 @@ namespace ParagliderSim
             //water
             Vector3 dirnormal = player.camFinalTarget - player.Position;
             dirnormal.Y = -dirnormal.Y; dirnormal.Normalize();
-           //Vector3 playerPosition = player.Position;
             Vector3 reflCameraPosition = player.Position;
             reflCameraPosition.Y = -(player.Position.Y - (waterHeight * 2f));
-            //Vector3 reflTargetPos = player.camFinalTarget;
-            //reflTargetPos.Y = -player.camFinalTarget.Y + waterHeight * 2;
             Vector3 reflTargetPos = reflCameraPosition + (dirnormal * 2);
 
             Vector3 cameraRight = Vector3.Transform(new Vector3(1, 0, 0), player.camRotation);
@@ -469,7 +447,7 @@ namespace ParagliderSim
             projRight = Matrix.CreateTranslation(-projectionCenterOffset, 0, 0) * projCenter;
 
             halfIPD = OculusClient.GetInterpupillaryDistance() * 0.5f;
-            //Matrix viewLefOffset = Matrix.CreateTranslation
+
             viewLeft =  viewMatrix * Matrix.CreateTranslation(halfIPD, 0, 0) ;
             viewRight = viewMatrix * Matrix.CreateTranslation(-halfIPD, 0, 0);
         }
@@ -532,11 +510,10 @@ namespace ParagliderSim
             else
             {
                 terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
-                //DrawPlayer();
                 DrawModel(unitMeter);
-                DrawInfo();
-                //if (playerPosition.X > 0 || playerPosition.Z < 0 || playerPosition.X > terrain.getWidthUnits() || -playerPosition.Z < terrain.getHeightUnits())
-                //    DrawCollision();
+
+                if(isDebug)
+                    DrawInfo();
 
                 base.Draw(gameTime);
             }
@@ -546,49 +523,44 @@ namespace ParagliderSim
         private void DrawOR(GameTime gameTime)
         {
             float time = (float)gameTime.TotalGameTime.TotalMilliseconds / 100.0f;
-          
             device.Clear(new Color(new Vector3(217,224,225)));
             SetProjectionOffset();
 
+            //Endrer rendertarget til høyre renderTargetLeft,viewMatrix til viewLeft og projectionMatrix til projLeft
             DrawRefractionMap();
             DrawReflectionMap();
 
+            //Tegner opp alt
             SetLeftEye();
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             
             drawGameWorld();
-            //player.Draw();
             DrawWater(time);
             
             base.Draw(gameTime);
             terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             terrain.DrawBillboards(ViewMatrix, projectionMatrix);
 
-            
-            
-            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
-            //    DrawCollision();
 
-
+            //Endrer rendertarget til høyre renderTargetRight,viewMatrix til viewRight og projectionMatrix til projRight
             SetRightEye();
 
+            //Tegner opp alt på nytt
             DrawSkyDome(viewMatrix);
             terrain.Draw(viewMatrix, projectionMatrix, effect, lightDirection);
             
             drawGameWorld();
-            //player.Draw();
             DrawWater(time);
             
             base.Draw(gameTime);
             terrain.DrawTrees(gameTime, viewMatrix, projectionMatrix);
             terrain.DrawBillboards(ViewMatrix, projectionMatrix);
-            //if (player.Position.X > 0 || player.Position.Z < 0 || player.Position.X > terrain.getWidthUnits() || -player.Position.Z < terrain.getHeightUnits())
-            //    DrawCollision();
 
 
             DrawOculusRenderTargets();
-            DrawInfo();
+            if(isDebug)
+                DrawInfo();
         }
 
 
@@ -646,17 +618,13 @@ namespace ParagliderSim
 
         private void DrawSkyDome(Matrix currentViewMatrix)
         {
-            //device.Clear(new Color(new Vector3(135f, 164f, 211f)));
-            device.Clear(new Color(169f/255f, 199f/255f, 229f/255f));
-            //device.Clear(Color.Blue);
+            device.Clear(new Color(111f/255f, 166f/255f, 236f/255f));
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.None;
             rs.FillMode = FillMode.Solid;
             rs.DepthBias = 0;
             device.RasterizerState = rs;
             device.DepthStencilState = DepthStencilState.None;
-            //device.SamplerStates[0] = SamplerState.LinearWrap;
-            //device.BlendState = BlendState.Opaque;
 
             Matrix[] modelTransforms = new Matrix[skyDome.Bones.Count];
             skyDome.CopyAbsoluteBoneTransformsTo(modelTransforms);

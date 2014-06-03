@@ -23,8 +23,7 @@ namespace ParagliderSim
         }
 
         GraphicsDevice device;
-
-        Game1 game;
+        ParagliderSimulator game;
         VertexMultitextured[] vertices;
         IndexBuffer indexBuffer;
         VertexBuffer vertexBuffer;
@@ -58,11 +57,8 @@ namespace ParagliderSim
             "Willow",
         };
         TreeProfile[] profiles;
-
         TreeLineMesh linemesh;
-
         int currentTree = 0;
-
         SimpleTree tree;
 
         WindStrengthSin wind;
@@ -81,7 +77,9 @@ namespace ParagliderSim
         VertexBuffer grassVertexBuffer;
         VertexDeclaration grassVertexDeclaration;
 
-        public Terrain(Game1 game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap, Texture2D dirtTexture, Texture2D fieldTextureMap)
+        public Terrain(ParagliderSimulator game, GraphicsDevice device,float terrainScale, float fogStart, float fogEnd, Texture2D heightmap, Texture2D grassTexture, Texture2D sandTexture, 
+            Texture2D rockTexture, Texture2D snowTexture, Texture2D treeMap, Texture2D grassMap, Texture2D treeTexture, ContentManager Content, Texture2D updraftMap, Texture2D dirtTexture, 
+            Texture2D fieldTextureMap)
         {
             this.game = game;
             this.device = device;
@@ -112,8 +110,6 @@ namespace ParagliderSim
             CreateBillboardVerticesFromList(treeList);
             //List<Vector3> grassList = GenerateTreePositions(grassMap, vertices);
             bbEffect = Content.Load<Effect>(@"Shader/bbEffect");
-
-
         }
 
         #region setup
@@ -131,7 +127,6 @@ namespace ParagliderSim
                         maxHeight = heightData[x, y];
                 }
             }
-
 
             vertices = new VertexMultitextured[terrainWidth * terrainHeight];
             for (int x = 0; x < terrainWidth; x++)
@@ -254,19 +249,13 @@ namespace ParagliderSim
             botRight = vertices[(x + 1) + y * terrainWidth];
             upRight = vertices[(x + 1) + (y + 1) * terrainWidth];
 
-            /*
-            if ((position.X / terrainScale) - x > 1- ((-position.Z / terrainScale) - y))
-                return new Plane(botLeft.Position, upRight.Position, botRight.Position);
-            else
-                return new Plane(botLeft.Position, upLeft.Position, botRight.Position); */
-
             if ((position.X / terrainScale) - x > 1 - ((-position.Z / terrainScale) - y))
                 return new Plane(upLeft.Position, upRight.Position, botRight.Position);
             else
                 return new Plane(upLeft.Position, botRight.Position, botLeft.Position);
-
         }
 
+        //deprecated
         public List<Plane> getPlanes(Vector3 position)
         {
             List<Plane> planes = new List<Plane>();
@@ -451,18 +440,11 @@ namespace ParagliderSim
 
         public void DrawTrees(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix)
         {
-            //..
-
             Matrix world = Matrix.Identity;
-            //Matrix scale = Matrix.CreateScale(0.0015f);
             Matrix scale = Matrix.CreateScale(0.0015f);
-          //  Matrix translation = Matrix.CreateTranslation(840, 195, -700);
-            //Matrix translation2 = Matrix.CreateTranslation(-3.0f, 0.0f, 0.0f);
-
 
             foreach (Vector3 currentV3 in treeList)
             {
-                //device.BlendState = BlendState.AlphaBlend;
                 Vector2 distance = new Vector2(currentV3.X - game.Player.Position.X, currentV3.Z - game.Player.Position.Z);
                 Matrix x = Matrix.CreateTranslation(currentV3);
                 if (distance.Length() < 100.0f)
@@ -474,12 +456,7 @@ namespace ParagliderSim
                     tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
                     animator.Animate(tree.Skeleton, tree.AnimationState, gameTime);
                 }
-                //else
-                    //tree.DrawLeaves(world * scale * x, viewMatrix, projectionMatrix);
-                //device.BlendState = BlendState.Opaque;
             }
-
-            
         }
 
         public void DrawBillboards(Matrix ViewMatrix, Matrix projectionMatrix)
@@ -514,14 +491,12 @@ namespace ParagliderSim
 
         public void Draw(Matrix viewMatrix, Matrix projectionMatrix, Effect effect, Vector3 lightDirection)
         {
-            //device.Clear(Color.Black);
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.None;
             rs.FillMode = FillMode.Solid;
             rs.DepthBias = 0;
             device.RasterizerState = rs;
             device.DepthStencilState = DepthStencilState.Default;
-            //device.SamplerStates[0] = SamplerState.LinearWrap;
             device.BlendState = BlendState.Opaque;
 
             effect.CurrentTechnique = effect.Techniques["MultiTextured"];
@@ -573,7 +548,7 @@ namespace ParagliderSim
             y = (int)Math.Floor(-position.Z / terrainScale);
 
             if ((x > 0) && (x < terrainWidth) && (y > 0) && (y < terrainHeight))
-                return updraftData[x, y] * 0.0025f;
+                return updraftData[x, y] * 0.0033f;
             else
                 return 0f;
         }

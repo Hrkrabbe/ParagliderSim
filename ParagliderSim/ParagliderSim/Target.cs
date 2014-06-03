@@ -20,7 +20,7 @@ namespace ParagliderSim
             get { return position; }
         }
 
-        Game1 game;
+        ParagliderSimulator game;
         Effect bbEffect;
         Vector3 position;
 
@@ -36,7 +36,7 @@ namespace ParagliderSim
         public Target(Game game, Vector3 position)
             : base(game)
         {
-            this.game = (Game1)game;
+            this.game = (ParagliderSimulator)game;
             this.position = position;
             
         }
@@ -44,8 +44,6 @@ namespace ParagliderSim
         public override void Initialize()
         {
             vertices = new VertexPositionTexture[6];
-            
-            
 
             base.Initialize();
         }
@@ -56,7 +54,6 @@ namespace ParagliderSim
             texture = game.Content.Load<Texture2D>(@"Textures/target");
 
             //bouncing
-
             newPos = position;
             newPos.Y += 2f;
             bouncingHeight = 2f;
@@ -88,8 +85,6 @@ namespace ParagliderSim
             bbEffect.Parameters["xCamPos"].SetValue(game.Player.Position);
             bbEffect.Parameters["xAllowedRotDir"].SetValue(new Vector3(0, 1, 0));
             bbEffect.Parameters["xBillboardTexture"].SetValue(texture);
-            //bbEffect.Parameters["FogStart"].SetValue(fogStart);
-            //bbEffect.Parameters["FogEnd"].SetValue(fogEnd);
             game.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             foreach (EffectPass pass in bbEffect.CurrentTechnique.Passes)
             {
@@ -97,9 +92,6 @@ namespace ParagliderSim
                 game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                 {
                     pass.Apply();
-                    //game.GraphicsDevice.SetVertexBuffer(treeVertexBuffer);
-                    //int noVertices = treeVertexBuffer.VertexCount;
-                    //int noTriangles = noVertices / 3;
                     game.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList,vertices, 0, vertices.Length / 3);
                 }
             }

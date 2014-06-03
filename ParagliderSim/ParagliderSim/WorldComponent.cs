@@ -48,18 +48,13 @@ namespace ParagliderSim
 
         public void Draw(Matrix viewMatrix, Matrix projectionMatrix)
         {
-            // Copy any parent transforms.
             Matrix[] transforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(transforms);
 
-            // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in model.Meshes)
             {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    //effect.EnableDefaultLighting();
                     effect.LightingEnabled = true;
                     effect.DirectionalLight0.Enabled = true;
                     effect.DirectionalLight0.DiffuseColor = Color.Black.ToVector3();
@@ -70,7 +65,6 @@ namespace ParagliderSim
                     effect.View = viewMatrix;
                     effect.Projection = projectionMatrix;
                 }
-                // Draw the mesh, using the effects set above.
                 mesh.Draw();
             }
         }
