@@ -131,6 +131,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LTreesLibrary\LTreesLibrary.csproj">
+      <Project>{8AAAB1D0-6C1D-4F92-851B-56D4611A6D1E}</Project>
+      <Name>LTreesLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
