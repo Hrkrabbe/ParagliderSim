@@ -254,6 +254,8 @@ namespace ParagliderSim
                 moveVector += new Vector3(0, 1, 0);
             if (keyState.IsKeyDown(Keys.Z))
                 moveVector += new Vector3(0, -1, 0);
+
+
             AddToPlayerPosition(moveVector * amount);
             UpdateViewMatrix();
         }
@@ -296,6 +298,9 @@ namespace ParagliderSim
             {
                 OculusClient.ResetSensorOrientation(0);
             }
+
+            if (keyState.IsKeyDown(Keys.Escape))
+                game.Exit();
 
             //gamepad
             if (padState.IsConnected && padState.Triggers.Left != 0)
